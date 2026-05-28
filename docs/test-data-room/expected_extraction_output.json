@@ -1,0 +1,49 @@
+{
+  "project": "Demo Greens Estate - Erf 1421",
+  "zoning": {
+    "category": "Single Residential Zone I with Estate Overlay",
+    "erf_area_m2": 624,
+    "max_coverage_percent": 50,
+    "max_footprint_m2": 312,
+    "far": 0.75,
+    "max_total_floor_area_m2": 468,
+    "max_height_m": 8.5,
+    "setbacks_m": {
+      "street": 4.5,
+      "side": 2.0,
+      "rear": 3.0
+    },
+    "min_parking_bays": 2
+  },
+  "constraints": [
+    {
+      "type": "servitude",
+      "value": "2.0 m municipal services servitude along south-western boundary",
+      "requires_validation": true
+    },
+    {
+      "type": "estate_style",
+      "value": "warm contemporary Cape farmhouse; pitched roof 22-35 degrees; natural materials"
+    },
+    {
+      "type": "services_screening",
+      "value": "water tanks, heat pumps and solar services must be screened/flush-mounted where possible"
+    }
+  ],
+  "stand": {
+    "erf_number": "1421",
+    "area_m2": 624,
+    "road_access": "south/south-east",
+    "pilot_priority": "High",
+    "slope": "moderate"
+  },
+  "suggested_ai_pipeline": [
+    "classify document",
+    "extract text/pages",
+    "extract JSON rules with citations",
+    "user validates rules",
+    "generate constraints",
+    "brief builder",
+    "concept generation"
+  ]
+}
