@@ -153,7 +153,15 @@ export function IntelligenceClient({
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                      {doc.extractions.map(ext => {
+                      {[...doc.extractions].sort((a, b) => {
+                        const getScore = (ext: Extraction) => {
+                          if (ext.rejected) return 0;
+                          if (!ext.verified && !ext.rejected) return 1;
+                          if (ext.verified) return 2;
+                          return 3;
+                        };
+                        return getScore(a) - getScore(b);
+                      }).map(ext => {
                         const isEditing = editingId === ext.id
                         const isLoading = actionLoading.has(ext.id)
                         const finalValue = ext.editedValue ?? ext.value
@@ -176,7 +184,7 @@ export function IntelligenceClient({
                               )}
                             </div>
 
-                            <div className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">{ext.category} &bull; {ext.label}</div>
+                            <div className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider pr-24 leading-snug">{ext.category} &bull; {ext.label}</div>
                             
                             {/* Editing / Display */}
                             {isEditing ? (
@@ -201,7 +209,7 @@ export function IntelligenceClient({
                               <div className="text-2xl font-semibold text-foreground group flex flex-wrap items-end gap-2 mt-2">
                                 {finalValue} {finalUnit && <span className="text-base font-normal text-muted-foreground mb-0.5">{finalUnit}</span>}
                                 {!ext.verified && !ext.rejected && (
-                                  <button onClick={() => startEdit(ext)} className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity ml-2 mb-1.5 font-medium">Edit</button>
+                                  <button onClick={() => startEdit(ext)} className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity ml-2 mb-1.5 font-medium cursor-pointer">Edit</button>
                                 )}
                               </div>
                             )}
@@ -220,13 +228,13 @@ export function IntelligenceClient({
                               
                               <div className="flex gap-2 w-full sm:w-auto">
                                 {ext.rejected ? (
-                                  <Button size="sm" variant="outline" className="h-8 rounded-full flex-1 sm:flex-none" onClick={() => handleVerify(ext.id)} disabled={isLoading}>Verify Instead</Button>
+                                  <Button size="sm" variant="outline" className="h-8 rounded-full flex-1 sm:flex-none cursor-pointer" onClick={() => handleVerify(ext.id)} disabled={isLoading}>Verify Instead</Button>
                                 ) : ext.verified ? (
-                                  <Button size="sm" variant="outline" className="h-8 rounded-full flex-1 sm:flex-none" onClick={() => handleReject(ext.id)} disabled={isLoading}>Revoke</Button>
+                                  <Button size="sm" variant="outline" className="h-8 rounded-full flex-1 sm:flex-none cursor-pointer" onClick={() => handleReject(ext.id)} disabled={isLoading}>Revoke</Button>
                                 ) : (
                                   <>
-                                    <Button size="sm" variant="outline" className="h-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 border-border flex-1 sm:flex-none" onClick={() => handleReject(ext.id)} disabled={isLoading || isEditing}>Reject</Button>
-                                    <Button size="sm" variant="default" className="h-8 rounded-full bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none" onClick={() => handleVerify(ext.id)} disabled={isLoading || isEditing}>Verify</Button>
+                                    <Button size="sm" variant="outline" className="h-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 border-border flex-1 sm:flex-none cursor-pointer" onClick={() => handleReject(ext.id)} disabled={isLoading || isEditing}>Reject</Button>
+                                    <Button size="sm" variant="default" className="h-8 rounded-full bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none cursor-pointer" onClick={() => handleVerify(ext.id)} disabled={isLoading || isEditing}>Verify</Button>
                                   </>
                                 )}
                               </div>

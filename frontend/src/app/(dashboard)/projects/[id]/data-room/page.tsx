@@ -2,6 +2,7 @@ import { uploadDocument } from "@/lib/actions/documents";
 import { prisma } from "@/lib/prisma";
 import { UploadZone } from "@/components/UploadZone";
 import { PendingJobPoller } from "@/components/PendingJobPoller";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = 'force-dynamic';
 
@@ -33,10 +34,8 @@ export default async function DataRoomPage({ params }: { params: Promise<{ id: s
   const hasPendingJobs = aiJobs.some(job => job.status === 'pending');
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl space-y-8">
       <PendingJobPoller hasPendingJobs={hasPendingJobs} />
-      <h1 className="text-3xl font-light tracking-tight text-foreground">Data Room</h1>
-      <p className="text-muted-foreground">Upload your zoning certificates, architectural guidelines, and surveyor diagrams here. Our AI will automatically extract the core rules and constraints.</p>
 
       <UploadZone action={handleUpload} />
 
