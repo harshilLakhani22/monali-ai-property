@@ -8,14 +8,19 @@ import { signup } from "@/lib/actions/auth"
 
 export default function SignupPage() {
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(formData: FormData) {
     setLoading(true)
     setError(null)
+    setSuccess(null)
     const result = await signup(formData)
     if (result?.error) {
       setError(result.error)
+      setLoading(false)
+    } else if (result?.success) {
+      setSuccess(result.success)
       setLoading(false)
     }
   }
@@ -36,55 +41,70 @@ export default function SignupPage() {
                   {error}
                 </div>
               )}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Full Name</label>
-                <div className="relative rounded-2xl bg-muted/50 p-1 ring-1 ring-border">
-                  <input 
-                    name="name"
-                    type="text" 
-                    required
-                    placeholder="Monali Kamffer"
-                    className="w-full bg-transparent px-4 py-3 text-sm focus:outline-none text-foreground placeholder:text-muted-foreground"
-                  />
+              {success ? (
+                <div className="p-6 text-center space-y-3">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-foreground">Check Your Email</h3>
+                  <p className="text-sm text-muted-foreground">{success}</p>
+                  <Link href="/login" className="inline-block mt-4 text-sm font-medium text-primary hover:underline">
+                    Back to Sign In
+                  </Link>
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Email Address</label>
-                <div className="relative rounded-2xl bg-muted/50 p-1 ring-1 ring-border">
-                  <input 
-                    name="email"
-                    type="email" 
-                    required
-                    placeholder="name@company.com"
-                    className="w-full bg-transparent px-4 py-3 text-sm focus:outline-none text-foreground placeholder:text-muted-foreground"
-                  />
+              ) : (
+                <>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Full Name</label>
+                  <div className="relative rounded-2xl bg-muted/50 p-1 ring-1 ring-border">
+                    <input 
+                      name="name"
+                      type="text" 
+                      required
+                      placeholder="Monali Kamffer"
+                      className="w-full bg-transparent px-4 py-3 text-sm focus:outline-none text-foreground placeholder:text-muted-foreground"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Password</label>
-                <div className="relative rounded-2xl bg-muted/50 p-1 ring-1 ring-border">
-                  <input 
-                    name="password"
-                    type="password" 
-                    required
-                    placeholder="••••••••"
-                    className="w-full bg-transparent px-4 py-3 text-sm focus:outline-none text-foreground placeholder:text-muted-foreground"
-                  />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Email Address</label>
+                  <div className="relative rounded-2xl bg-muted/50 p-1 ring-1 ring-border">
+                    <input 
+                      name="email"
+                      type="email" 
+                      required
+                      placeholder="name@company.com"
+                      className="w-full bg-transparent px-4 py-3 text-sm focus:outline-none text-foreground placeholder:text-muted-foreground"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="pt-2">
-                <Button disabled={loading} type="submit" className="w-full rounded-2xl py-6 text-sm font-medium group transition-all duration-300 active:scale-[0.98]">
-                  {loading ? "Submitting..." : "Submit Application"}
-                  {!loading && (
-                    <div className="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary-foreground/10 transition-transform duration-300 group-hover:translate-x-1">
-                      <ArrowRight className="h-3 w-3" />
-                    </div>
-                  )}
-                </Button>
-              </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Password</label>
+                  <div className="relative rounded-2xl bg-muted/50 p-1 ring-1 ring-border">
+                    <input 
+                      name="password"
+                      type="password" 
+                      required
+                      placeholder="••••••••"
+                      className="w-full bg-transparent px-4 py-3 text-sm focus:outline-none text-foreground placeholder:text-muted-foreground"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Button disabled={loading} type="submit" className="w-full rounded-2xl py-6 text-sm font-medium group transition-all duration-300 active:scale-[0.98]">
+                    {loading ? "Submitting..." : "Submit Application"}
+                    {!loading && (
+                      <div className="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary-foreground/10 transition-transform duration-300 group-hover:translate-x-1">
+                        <ArrowRight className="h-3 w-3" />
+                      </div>
+                    )}
+                  </Button>
+                </div>
+                </>
+              )}
             </form>
 
             <div className="mt-8 text-center text-sm text-muted-foreground">

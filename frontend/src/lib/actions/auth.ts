@@ -38,7 +38,7 @@ export async function signup(formData: FormData) {
   const { headers } = await import('next/headers')
   const origin = (await headers()).get('origin') || 'http://localhost:3000'
 
-  const { data, error } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -53,34 +53,20 @@ export async function signup(formData: FormData) {
     return { error: error.message }
   }
 
-  if (data.user) {
-    let dbUser = await prisma.user.findUnique({
-      where: { email: data.user.email! }
-    });
-
-    if (!dbUser) {
-      const org = await prisma.organization.create({
-        data: {
-          name: 'My Workspace',
-        }
-      });
-
-      dbUser = await prisma.user.create({
-        data: {
-          id: data.user.id,
-          email: data.user.email!,
-          organizationId: org.id,
-        }
-      });
-    }
-  }
-
-  revalidatePath('/', 'layout')
-  redirect('/')
+  // Don't create DB user here — the /auth/callback route handles that
+  // after the user confirms their email.
+  // Show success message instead of redirecting to dashboard.
+  return { success: 'Check your email for a confirmation link.' }
 }
 
 export async function signout() {
   const supabase = await createClient()
   await supabase.auth.signOut()
+
+  // Clear the DB user verification cache cookie
+  const { cookies } = await import('next/headers')
+  const cookieStore = await cookies()
+  cookieStore.delete('db_user_verified')
+
   redirect('/login')
 }

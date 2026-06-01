@@ -8,6 +8,24 @@ export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  // Safety net: ensure user exists in our database
+  // (handles edge case where Supabase auth exists but DB was wiped)
+  if (user) {
+    const existingUser = await prisma.user.findUnique({ where: { id: user.id } })
+    if (!existingUser) {
+      const org = await prisma.organization.create({
+        data: { name: 'My Workspace' }
+      })
+      await prisma.user.create({
+        data: {
+          id: user.id,
+          email: user.email!,
+          organizationId: org.id,
+        }
+      })
+    }
+  }
+
   const projects = user ? await prisma.project.findMany({
     where: { userId: user.id },
     orderBy: { name: 'asc' }

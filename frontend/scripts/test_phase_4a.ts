@@ -7,7 +7,7 @@ import * as path from 'path';
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 import { PrismaClient } from '@prisma/client';
-import { Pool } from 'pg';
+import { Pool } from '../node_modules/@types/pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 const connectionString = `${process.env.DATABASE_URL}`;
@@ -33,7 +33,7 @@ async function testPhase4A() {
   console.log("2. Uploading PDF to Supabase...");
   const filePath = path.resolve(process.cwd(), '../docs/test-data-room/01_demo_zoning_certificate_and_scheme_extract.pdf');
   const fileBuffer = fs.readFileSync(filePath);
-  
+
   const storagePath = `${projectId}/test_zoning_${Date.now()}.pdf`;
   const { data: uploadData, error: uploadError } = await supabase.storage
     .from('documents')

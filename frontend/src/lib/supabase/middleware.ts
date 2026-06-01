@@ -28,6 +28,8 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
+  // This call refreshes the session automatically if the access token is expired.
+  // The refreshed tokens are written back via the setAll callback above.
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -35,12 +37,14 @@ export async function updateSession(request: NextRequest) {
   const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup')
   const isCallbackRoute = request.nextUrl.pathname.startsWith('/auth/callback')
 
+  // No valid session → redirect to login (unless already on auth/callback page)
   if (!user && !isAuthRoute && !isCallbackRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
+  // Already logged in but trying to visit login/signup → redirect to dashboard
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
