@@ -1,10 +1,34 @@
-export default function IntelligencePage() {
+import { prisma } from '@/lib/prisma'
+import { IntelligenceClient } from './IntelligenceClient'
+
+export default async function IntelligencePage({ params }: { params: { id: string } }) {
+  // Fetch documents for the project, their intelligence extraction jobs, and extractions
+  const documents = await prisma.document.findMany({
+    where: { projectId: params.id },
+    include: {
+      aiJobs: {
+        where: { type: 'intelligence_extraction' },
+        orderBy: { createdAt: 'desc' },
+        take: 1
+      },
+      extractions: {
+        orderBy: { category: 'asc' }
+      }
+    }
+  })
+
+  // Format data for the client
+  const formattedDocs = documents.map(doc => ({
+    id: doc.id,
+    fileName: doc.name,
+    status: doc.status,
+    intelligenceJob: doc.aiJobs[0] || undefined,
+    extractions: doc.extractions
+  }))
+
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-      <h2 className="text-lg font-medium text-zinc-900">Extracted Intelligence</h2>
-      <p className="mt-2 text-sm text-zinc-500">
-        Placeholder for Milestone 1. This view will show parsed site boundaries, topography analysis, and zoning rules extracted from the documents.
-      </p>
+    <div className="max-w-6xl mx-auto">
+      <IntelligenceClient projectId={params.id} documents={formattedDocs} />
     </div>
   )
 }

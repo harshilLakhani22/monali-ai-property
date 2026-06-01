@@ -72,6 +72,7 @@ model Document {
   status      String          // "uploaded", "processing", "extracted"
   chunks      DocumentChunk[]
   extractions Extraction[]
+  aiJobs      AIJob[]
 }
 
 model DocumentChunk {
@@ -89,12 +90,14 @@ model AIJob {
   projectId   String
   project     Project   @relation(fields: [projectId], references: [id])
   documentId  String?
+  document    Document? @relation(fields: [documentId], references: [id])
   type        String    // "extraction", "concept_generation"
   status      String    // "pending", "running", "completed", "failed"
   result      Json?
   errorLog    String?
   startedAt   DateTime?
   completedAt DateTime?
+  createdAt   DateTime  @default(now())
 }
 
 model Extraction {
@@ -103,10 +106,15 @@ model Extraction {
   project     Project  @relation(fields: [projectId], references: [id])
   documentId  String
   document    Document @relation(fields: [documentId], references: [id])
-  category    String   // "setback", "height", "coverage"
-  value       String
+  fieldKey    String   // e.g., 'max_height', 'street_building_line'
+  label       String   // e.g., 'Maximum Height', 'Street Building Line'
+  category    String   // e.g., 'zoning', 'setback', 'coverage'
+  value       String   // e.g., '2', '3'
+  unit        String?  // e.g., 'storeys', 'm', '%'
+  sourceText  String   // Exact snippet from the document to prove the extraction
   confidence  Float
   pageRefs    Json?
+  notes       String?  // Any LLM reasoning or condition
   verified    Boolean  @default(false)
 }
 

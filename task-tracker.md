@@ -32,9 +32,10 @@ This document tracks the high-level milestones for the Monali AI Minimum Viable 
 ## 🟢 Milestone 4: Data Room & Document Processing
 **Goal:** Process uploaded PDFs, extract text, and classify heuristic chunks.
 **What we implemented:**
-- **Phase 4A (Completed):** PDF Upload via Signed URLs, PyMuPDF background extraction, and DocumentChunk inserts.
-- **Phase 4B (Completed):** DocumentChunk heuristic classification based on filenames and text patterns, and improved Next.js status UI with chunk preview.
-- **Phase 4C (Next):** Extract constraints using Gemini / LLMs.
+- [x] **Phase 4A:** Setup Next.js -> Supabase Storage -> FastAPI -> PyMuPDF chunking pipeline.
+- [x] **Phase 4B:** Implement chunk classification heuristic and Next.js processing status UI.
+- [x] **Phase 4C:** Gemini intelligence extraction (manual trigger), structured JSON parsing, and unverified Extraction rows.
+- [ ] **Phase 4D:** Intelligence verification/editing UI and saving to Constraint table.
 
 ## ⚪ Future Milestones (To Be Defined)
 - **Milestone 5:** AI Intelligence Engine (Zoning rule extraction, feasibility logic)
