@@ -35,7 +35,12 @@ This document tracks the high-level milestones for the Monali AI Minimum Viable 
 - [x] **Phase 4A:** Setup Next.js -> Supabase Storage -> FastAPI -> PyMuPDF chunking pipeline.
 - [x] **Phase 4B:** Implement chunk classification heuristic and Next.js processing status UI.
 - [x] **Phase 4C:** Gemini intelligence extraction (manual trigger), structured JSON parsing, and unverified Extraction rows.
-- [ ] **Phase 4D:** Intelligence verification/editing UI and saving to Constraint table.
+- [x] **Phase 4D:** Intelligence Verification Workflow
+**Status**: Completed
+
+- [x] Prisma updates (edited fields, verification tracking, `Constraint` map).
+- [x] UI workspace for inspecting `sourceText`, making inline edits, and verifying/rejecting.
+- [x] Server actions with strict idempotency (upserts based on `extractionId`).
 
 ## ⚪ Future Milestones (To Be Defined)
 - **Milestone 5:** AI Intelligence Engine (Zoning rule extraction, feasibility logic)

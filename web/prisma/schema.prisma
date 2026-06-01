@@ -114,8 +114,18 @@ model Extraction {
   sourceText  String   // Exact snippet from the document to prove the extraction
   confidence  Float
   pageRefs    Json?
-  notes       String?  // Any LLM reasoning or condition
-  verified    Boolean  @default(false)
+  notes          String?  // Any LLM reasoning or condition
+  verified       Boolean  @default(false)
+  verifiedBy     String?
+  verifiedAt     DateTime?
+  rejected       Boolean  @default(false)
+  rejectionReason String?
+  editedValue    String?
+  editedUnit     String?
+  editedLabel    String?
+  editedCategory String?
+  editedAt       DateTime?
+  constraint     Constraint?
 }
 
 model Brief {
@@ -166,9 +176,11 @@ model Report {
 }
 
 model Constraint {
-  id          String   @id @default(uuid())
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id])
-  type        String
-  value       String
+  id           String   @id @default(uuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id])
+  extractionId String?  @unique
+  extraction   Extraction? @relation(fields: [extractionId], references: [id])
+  type         String
+  value        String
 }

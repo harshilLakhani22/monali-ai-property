@@ -37,10 +37,82 @@ export async function extractIntelligence(projectId: string, documentId: string)
       throw new Error('Failed to start extraction')
     }
 
-    revalidatePath(`/projects/${projectId}/intelligence`)
+    try { revalidatePath(`/projects/${projectId}/intelligence`) } catch (e) {}
     return { success: true }
   } catch (error) {
     console.error('Extraction trigger error:', error)
     return { success: false, error: 'Failed to trigger extraction' }
   }
+}
+
+export async function updateExtraction(extractionId: string, projectId: string, data: { value?: string, unit?: string, label?: string, category?: string }) {
+  await prisma.extraction.update({
+    where: { id: extractionId },
+    data: {
+      editedValue: data.value,
+      editedUnit: data.unit,
+      editedLabel: data.label,
+      editedCategory: data.category,
+      editedAt: new Date(),
+    }
+  })
+  try { revalidatePath(`/projects/${projectId}/intelligence`) } catch (e) {}
+}
+
+export async function verifyExtraction(extractionId: string, projectId: string) {
+  const extraction = await prisma.extraction.findUnique({ where: { id: extractionId } })
+  if (!extraction) throw new Error('Extraction not found')
+
+  // Update Extraction to verified
+  const updatedExt = await prisma.extraction.update({
+    where: { id: extractionId },
+    data: {
+      verified: true,
+      rejected: false,
+      verifiedAt: new Date()
+    }
+  })
+
+  // Upsert Constraint using extractionId
+  const finalValueStr = updatedExt.editedValue ?? updatedExt.value
+  const finalUnitStr = updatedExt.editedUnit ?? updatedExt.unit
+  const fullValue = finalUnitStr ? `${finalValueStr} ${finalUnitStr}`.trim() : finalValueStr
+  const finalType = updatedExt.editedCategory ?? updatedExt.category
+
+  await prisma.constraint.upsert({
+    where: { extractionId: extraction.id },
+    create: {
+      projectId: extraction.projectId,
+      extractionId: extraction.id,
+      type: finalType,
+      value: fullValue
+    },
+    update: {
+      type: finalType,
+      value: fullValue
+    }
+  })
+
+  try { revalidatePath(`/projects/${projectId}/intelligence`) } catch (e) {}
+}
+
+export async function rejectExtraction(extractionId: string, projectId: string, reason?: string) {
+  await prisma.extraction.update({
+    where: { id: extractionId },
+    data: {
+      rejected: true,
+      verified: false,
+      rejectionReason: reason || null
+    }
+  })
+  
+  // If it was previously verified, remove the constraint
+  try {
+    await prisma.constraint.delete({
+      where: { extractionId: extractionId }
+    })
+  } catch(e) {
+    // Ignore if not found
+  }
+  try { revalidatePath(`/projects/${projectId}/intelligence`) } catch (e) {}
 }
