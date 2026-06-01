@@ -15,6 +15,15 @@ def get_db_connection():
         raise ValueError("Database URL not found in environment")
     return psycopg.connect(db_url, row_factory=dict_row)
 
+def update_job_message(job_id: str, message: str):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute('UPDATE "AIJob" SET message = %s WHERE id = %s', (message, job_id))
+                conn.commit()
+    except Exception as e:
+        print(f"Failed to update job message: {e}")
+
 def classify_chunk(text: str, file_name: str) -> str:
     text_lower = text.lower()
     name_lower = file_name.lower().replace("_", " ").replace("-", " ")
@@ -79,6 +88,8 @@ def process_pdf_task(request: DocumentProcessRequest):
         job_id = job_row["id"]
         conn.commit()
         
+        update_job_message(job_id, "Downloading PDF...")
+        
         # 2. Download PDF
         try:
             with httpx.Client() as client:
@@ -88,9 +99,11 @@ def process_pdf_task(request: DocumentProcessRequest):
         except Exception as e:
             raise Exception(f"Failed to download PDF from signed URL: {str(e)}")
 
+        update_job_message(job_id, "Reading PDF text...")
         # 3. Read PDF with PyMuPDF
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         
+        update_job_message(job_id, f"Extracting text from {len(doc)} pages...")
         pages_text = []
         total_text_len = 0
         
@@ -106,6 +119,7 @@ def process_pdf_task(request: DocumentProcessRequest):
         if len(pages_text) > 0 and (total_text_len / len(pages_text)) < 50:
             raise Exception("Scanned document detected. OCR pipeline required.")
             
+        update_job_message(job_id, f"Classifying chunks and extracting constraints...")
         # 5. Insert DocumentChunks
         with conn.cursor() as cur:
             for page_num, text in pages_text:
@@ -120,7 +134,7 @@ def process_pdf_task(request: DocumentProcessRequest):
             # 6. Update AIJob and Document
             cur.execute("""
                 UPDATE "AIJob"
-                SET status = 'completed', "completedAt" = NOW()
+                SET status = 'completed', message = 'Processing complete', "completedAt" = NOW()
                 WHERE id = %s
             """, (job_id,))
             

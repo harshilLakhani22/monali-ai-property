@@ -1,6 +1,9 @@
 import { uploadDocument } from "@/lib/actions/documents";
 import { prisma } from "@/lib/prisma";
-import { Button } from "@/components/ui/button";
+import { UploadZone } from "@/components/UploadZone";
+import { PendingJobPoller } from "@/components/PendingJobPoller";
+
+export const dynamic = 'force-dynamic';
 
 export default async function DataRoomPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: projectId } = await params;
@@ -26,88 +29,95 @@ export default async function DataRoomPage({ params }: { params: Promise<{ id: s
 
   // NOTE: A real retry button would call a server action that recreates the AIJob and hits FastAPI.
   // For now, we'll just show it visually if job failed.
+
+  const hasPendingJobs = aiJobs.some(job => job.status === 'pending');
+
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
-      <h1 className="text-3xl font-light tracking-tight text-white">Data Room</h1>
-      <p className="text-zinc-400">Upload your zoning certificates, architectural guidelines, and surveyor diagrams here. Our AI will automatically extract the core rules and constraints.</p>
+      <PendingJobPoller hasPendingJobs={hasPendingJobs} />
+      <h1 className="text-3xl font-light tracking-tight text-foreground">Data Room</h1>
+      <p className="text-muted-foreground">Upload your zoning certificates, architectural guidelines, and surveyor diagrams here. Our AI will automatically extract the core rules and constraints.</p>
 
-      <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-8 backdrop-blur-sm">
-        <form action={handleUpload} className="flex flex-col space-y-4 items-start">
-          <input 
-            type="file" 
-            name="file" 
-            accept="application/pdf"
-            required 
-            className="text-zinc-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-zinc-800 file:text-white hover:file:bg-zinc-700"
-          />
-          <Button type="submit" variant="default" className="bg-white text-black hover:bg-zinc-200">
-            Upload & Process PDF
-          </Button>
-        </form>
-      </div>
+      <UploadZone action={handleUpload} />
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-medium text-white">Uploaded Documents</h2>
+      <div className="space-y-6 pt-6">
+        <h2 className="text-xl font-semibold tracking-tight flex items-center gap-3">
+          <span className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium bg-primary/10 text-primary">FILES</span>
+          Uploaded Documents
+        </h2>
+        
         {documents.length === 0 ? (
-          <p className="text-zinc-500">No documents uploaded yet.</p>
+          <p className="text-muted-foreground bg-card p-6 rounded-2xl border border-border text-center">No documents uploaded yet.</p>
         ) : (
           <div className="grid gap-4">
             {documents.map(doc => {
               const relatedJob = aiJobs.find(job => job.documentId === doc.id);
               return (
-                <div key={doc.id} className="flex flex-col bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
-                  <div className="flex items-center justify-between p-4">
-                    <div>
-                      <p className="font-medium text-white">{doc.name}</p>
-                      <p className="text-sm text-zinc-500">Status: {doc.status}</p>
-                      {doc.chunks.length > 0 && (
-                        <p className="text-xs text-zinc-400 mt-1">{doc.chunks.length} chunks extracted</p>
-                      )}
-                    </div>
-                    <div className="text-right flex flex-col items-end gap-2">
-                      {relatedJob && (
-                        <>
-                          <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                            relatedJob.status === 'completed' ? 'bg-green-500/10 text-green-400' :
-                            relatedJob.status === 'failed' ? 'bg-red-500/10 text-red-400' :
-                            'bg-blue-500/10 text-blue-400'
-                          }`}>
-                            AI: {relatedJob.status.toUpperCase()}
-                          </span>
-                          {relatedJob.errorLog && (
-                            <p className="text-xs text-red-400 max-w-[200px] truncate">{relatedJob.errorLog}</p>
+                <div key={doc.id} className="p-1 rounded-2xl bg-black/5 dark:bg-white/5 border border-border/50">
+                  <div className="flex flex-col bg-card border border-border/50 rounded-[calc(1rem-0.25rem)] overflow-hidden shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 gap-4">
+                      <div>
+                        <p className="font-semibold text-foreground text-lg">{doc.name}</p>
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="text-sm font-medium text-muted-foreground capitalize">Status: {doc.status}</span>
+                          {doc.chunks.length > 0 && (
+                            <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary font-medium">{doc.chunks.length} chunks extracted</span>
                           )}
-                          {relatedJob.status === 'failed' && (
-                            <Button variant="outline" size="sm" className="h-7 text-xs border-zinc-700 text-zinc-300 hover:text-white">
-                              Retry Processing
-                            </Button>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  {doc.chunks.length > 0 && (
-                    <details className="border-t border-zinc-800 p-4">
-                      <summary className="text-sm text-zinc-400 cursor-pointer hover:text-white">View Extracted Chunks</summary>
-                      <div className="mt-4 space-y-4 max-h-96 overflow-y-auto pr-2">
-                        {doc.chunks.map((chunk) => (
-                          <div key={chunk.id} className="p-3 bg-black/40 rounded border border-zinc-800/50">
-                            <div className="flex justify-between items-center mb-2">
-                              <span className="text-xs text-zinc-500">Page {chunk.pageRef}</span>
-                              {chunk.classification && (
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
-                                  {chunk.classification}
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-xs text-zinc-300 whitespace-pre-wrap font-mono line-clamp-4 hover:line-clamp-none">
-                              {chunk.text}
-                            </p>
-                          </div>
-                        ))}
+                        </div>
                       </div>
-                    </details>
-                  )}
+                      <div className="flex flex-col sm:items-end gap-2">
+                        {relatedJob && (
+                          <>
+                            <span className={`inline-block px-3 py-1.5 text-xs font-semibold rounded-full ${
+                              relatedJob.status === 'completed' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
+                              relatedJob.status === 'failed' ? 'bg-destructive/10 text-destructive' :
+                              'bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                            }`}>
+                              AI: {relatedJob.status.toUpperCase()}
+                            </span>
+                            {relatedJob.message && relatedJob.status !== 'completed' && relatedJob.status !== 'failed' && (
+                              <p className="text-[10px] uppercase font-bold tracking-widest text-blue-500 animate-pulse mt-1.5">{relatedJob.message}</p>
+                            )}
+                            {relatedJob.errorLog && (
+                              <p className="text-xs text-destructive max-w-[200px] truncate">{relatedJob.errorLog}</p>
+                            )}
+                            {relatedJob.status === 'failed' && (
+                              <Button variant="outline" size="sm" className="h-8 text-xs rounded-full">
+                                Retry Processing
+                              </Button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    {doc.chunks.length > 0 && (
+                      <details className="border-t border-border/50 p-5 group">
+                        <summary className="text-sm font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors outline-none list-none flex items-center gap-2">
+                          <svg className="w-4 h-4 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                          View Extracted Chunks
+                        </summary>
+                        <div className="mt-6 space-y-4 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+                          {doc.chunks.map((chunk) => (
+                            <div key={chunk.id} className="p-4 bg-black/5 dark:bg-white/5 rounded-xl border border-border/50">
+                              <div className="flex justify-between items-center mb-3">
+                                <span className="text-xs font-medium text-muted-foreground">Page {chunk.pageRef}</span>
+                                {chunk.classification && (
+                                  <span className="text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full bg-background border border-border text-foreground font-semibold">
+                                    {chunk.classification}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-foreground/80 whitespace-pre-wrap font-mono line-clamp-4 hover:line-clamp-none transition-all">
+                                {chunk.text}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    )}
+                  </div>
                 </div>
               )
             })}

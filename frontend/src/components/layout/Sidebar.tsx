@@ -9,7 +9,7 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="flex h-full w-72 flex-col border-r border-border bg-card">
+    <div className="hidden md:flex h-full w-72 flex-col border-r border-border bg-card">
       <div className="flex h-16 items-center border-b border-border px-8">
         <Building2 className="h-6 w-6 text-primary mr-3" />
         <span className="text-base font-semibold tracking-tight text-foreground">Monali Platform</span>

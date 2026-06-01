@@ -1,10 +1,14 @@
 'use server';
 
 import { createClient } from '../supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { prisma } from '../prisma';
 import { revalidatePath } from 'next/cache';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+let API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+if (!API_URL.endsWith('/api')) {
+  API_URL = `${API_URL}/api`;
+}
 
 export async function uploadDocument(projectId: string, formData: FormData) {
   try {
@@ -24,7 +28,13 @@ export async function uploadDocument(projectId: string, formData: FormData) {
     const timestamp = Date.now();
     const filePath = `${projectId}/${timestamp}_${file.name}`;
     
-    const { error: uploadError } = await supabase.storage
+    // Use service role to bypass RLS for storage, since we already authenticated the user above
+    const supabaseAdmin = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { error: uploadError } = await supabaseAdmin.storage
       .from('documents')
       .upload(filePath, file, {
         cacheControl: '3600',
@@ -36,7 +46,7 @@ export async function uploadDocument(projectId: string, formData: FormData) {
     }
 
     // 2. Generate a Signed URL (valid for 15 minutes = 900 seconds)
-    const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+    const { data: signedUrlData, error: signedUrlError } = await supabaseAdmin.storage
       .from('documents')
       .createSignedUrl(filePath, 900);
 

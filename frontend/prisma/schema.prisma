@@ -93,6 +93,7 @@ model AIJob {
   document    Document? @relation(fields: [documentId], references: [id])
   type        String    // "extraction", "concept_generation"
   status      String    // "pending", "running", "completed", "failed"
+  message     String?   // Real-time detailed progress status
   result      Json?
   errorLog    String?
   startedAt   DateTime?

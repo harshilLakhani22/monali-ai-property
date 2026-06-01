@@ -10,7 +10,10 @@ export function Header() {
   return (
     <header className="flex h-16 w-full items-center justify-between border-b border-border bg-card px-6 shadow-sm sticky top-0 z-10">
       <div className="flex items-center gap-4">
-        {/* Breadcrumbs or page title could go here */}
+        {/* Mobile brand name, visible only on small screens */}
+        <div className="md:hidden flex items-center">
+          <span className="text-base font-semibold tracking-tight text-foreground">Monali</span>
+        </div>
       </div>
       <div className="flex items-center gap-4">
         <Button

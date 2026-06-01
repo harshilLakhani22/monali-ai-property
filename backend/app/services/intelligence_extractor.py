@@ -12,6 +12,15 @@ def get_db_connection():
         raise ValueError("Database URL not found in environment")
     return psycopg.connect(db_url, row_factory=dict_row)
 
+def update_job_message(job_id: str, message: str):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute('UPDATE "AIJob" SET message = %s WHERE id = %s', (message, job_id))
+                conn.commit()
+    except Exception as e:
+        print(f"Failed to update job message: {e}")
+
 def extract_intelligence_task(request: ExtractionRequest):
     conn = None
     try:
@@ -38,6 +47,8 @@ def extract_intelligence_task(request: ExtractionRequest):
         job_id = job_row["id"]
         conn.commit()
         
+        update_job_message(job_id, "Preparing chunks for extraction...")
+        
         # 2. Delete old unverified extraction rows (idempotency)
         with conn.cursor() as cur:
             cur.execute("""
@@ -47,6 +58,7 @@ def extract_intelligence_task(request: ExtractionRequest):
             conn.commit()
             
         # 3. Fetch DocumentChunks
+        update_job_message(job_id, "Gathering classified chunks...")
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT id, text, "pageRef", classification 
@@ -75,10 +87,12 @@ def extract_intelligence_task(request: ExtractionRequest):
             grouped_text += chunk['text'] + "\\n"
             
         # 5. Extract with LLM
+        update_job_message(job_id, "Analyzing document with Gemini AI...")
         adapter = GeminiAdapter()
         extraction_result = adapter.extract_constraints(grouped_text)
         
         # 6. Insert into Extraction table
+        update_job_message(job_id, f"Saving {len(extraction_result.constraints)} extracted rules...")
         with conn.cursor() as cur:
             for constraint in extraction_result.constraints:
                 extraction_id = str(uuid.uuid4())
@@ -105,7 +119,7 @@ def extract_intelligence_task(request: ExtractionRequest):
             # 7. Update AIJob
             cur.execute("""
                 UPDATE "AIJob"
-                SET status = 'completed', "completedAt" = NOW()
+                SET status = 'completed', message = 'Processing complete', "completedAt" = NOW()
                 WHERE id = %s
             """, (job_id,))
             

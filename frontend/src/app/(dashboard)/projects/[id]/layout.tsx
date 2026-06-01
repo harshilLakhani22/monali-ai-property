@@ -3,6 +3,7 @@ import { LayoutDashboard, FileText, BrainCircuit, BookOpen, Layers, Calculator, 
 import { notFound, redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { prisma } from "@/lib/prisma"
+import { ProjectNav } from "@/components/ProjectNav"
 
 export default async function ProjectWorkspaceLayout({
   children,
@@ -52,19 +53,8 @@ export default async function ProjectWorkspaceLayout({
         </div>
       </div>
 
-      <div className="border-b border-zinc-200">
-        <nav className="-mb-px flex space-x-6 overflow-x-auto">
-          {tabs.map((tab) => (
-            <Link
-              key={tab.name}
-              href={tab.href}
-              className="flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent py-4 px-1 text-sm font-medium text-zinc-500 hover:border-zinc-300 hover:text-zinc-700"
-            >
-              <tab.icon className="h-4 w-4" />
-              {tab.name}
-            </Link>
-          ))}
-        </nav>
+      <div className="border-b border-border/50">
+        <ProjectNav projectId={id} />
       </div>
 
       <div className="py-4">
