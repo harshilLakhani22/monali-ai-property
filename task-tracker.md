@@ -29,8 +29,14 @@ This document tracks the high-level milestones for the Monali AI Minimum Viable 
 - Set up CORS to communicate securely with the Next.js frontend.
 - Establish the foundational architecture for integrating future AI models.
 
+## 🟢 Milestone 4: Data Room & Document Processing
+**Goal:** Process uploaded PDFs, extract text, and classify heuristic chunks.
+**What we implemented:**
+- **Phase 4A (Completed):** PDF Upload via Signed URLs, PyMuPDF background extraction, and DocumentChunk inserts.
+- **Phase 4B (Completed):** DocumentChunk heuristic classification based on filenames and text patterns, and improved Next.js status UI with chunk preview.
+- **Phase 4C (Next):** Extract constraints using Gemini / LLMs.
+
 ## ⚪ Future Milestones (To Be Defined)
-- **Milestone 4:** Data Room & Document Processing (PDF extraction, OCR)
 - **Milestone 5:** AI Intelligence Engine (Zoning rule extraction, feasibility logic)
 - **Milestone 6:** Spatial Concept Generation & Massing Models
 - **Milestone 7:** Costing & Final Reporting generation

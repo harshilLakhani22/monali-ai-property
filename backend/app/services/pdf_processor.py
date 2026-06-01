@@ -15,12 +15,50 @@ def get_db_connection():
         raise ValueError("Database URL not found in environment")
     return psycopg.connect(db_url, row_factory=dict_row)
 
+def classify_chunk(text: str, file_name: str) -> str:
+    text_lower = text.lower()
+    name_lower = file_name.lower().replace("_", " ").replace("-", " ")
+    
+    # 1. Filename overrides
+    if "zoning" in name_lower:
+        return "zoning"
+    if any(kw in name_lower for kw in ["estate", "guidelines", "design rules"]):
+        return "estate_guidelines"
+    if any(kw in name_lower for kw in ["stand schedule", "site development plan", "sdp"]):
+        return "stand_schedule"
+    if any(kw in name_lower for kw in ["surveyor general", "sg diagram", "s.g."]):
+        return "sg_diagram"
+
+    # 2. Text fallback
+    if any(kw in text_lower for kw in ["zoning", "use zone", "residential 1", "residential 2", "business"]):
+        return "zoning"
+    if any(kw in text_lower for kw in ["setback", "building line", "boundary"]):
+        return "setbacks"
+    if any(kw in text_lower for kw in ["coverage", "maximum coverage"]):
+        return "coverage"
+    if any(kw in text_lower for kw in ["far", "floor area ratio", "bulk"]):
+        return "far"
+    if any(kw in text_lower for kw in ["height", "storeys", "meters"]):
+        return "height"
+    if any(kw in text_lower for kw in ["parking", "bays"]):
+        return "parking"
+    if any(kw in text_lower for kw in ["estate", "architectural guidelines", "homeowners"]):
+        return "estate_guidelines"
+    if any(kw in text_lower for kw in ["design guidelines", "roof", "paint", "materials"]):
+        return "design_rules"
+    if any(kw in text_lower for kw in ["stand schedule", "erf number", "area m2", "stand"]):
+        return "stand_schedule"
+    if any(kw in text_lower for kw in ["surveyor general", "s.g.", "sg no", "diagram"]):
+        return "sg_diagram"
+    
+    return "unknown"
+
 def process_pdf_task(request: DocumentProcessRequest):
     conn = None
     try:
         conn = get_db_connection()
         
-        # 1. Update AIJob to running
+        # 1. Update AIJob to running & Get Document name
         with conn.cursor() as cur:
             cur.execute("""
                 UPDATE "AIJob" 
@@ -33,6 +71,10 @@ def process_pdf_task(request: DocumentProcessRequest):
                 # Might have already been picked up or doesn't exist
                 print(f"No pending AIJob found for document {request.document_id}")
                 return 
+            
+            cur.execute('SELECT name FROM "Document" WHERE id = %s', (request.document_id,))
+            doc_row = cur.fetchone()
+            file_name = doc_row["name"] if doc_row else ""
 
         job_id = job_row["id"]
         conn.commit()
@@ -69,10 +111,11 @@ def process_pdf_task(request: DocumentProcessRequest):
             for page_num, text in pages_text:
                 if len(text.strip()) > 0:
                     chunk_id = str(uuid.uuid4())
+                    classification = classify_chunk(text, file_name)
                     cur.execute("""
-                        INSERT INTO "DocumentChunk" (id, "documentId", text, "pageRef")
-                        VALUES (%s, %s, %s, %s)
-                    """, (chunk_id, request.document_id, text, page_num))
+                        INSERT INTO "DocumentChunk" (id, "documentId", text, "pageRef", classification)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (chunk_id, request.document_id, text, page_num, classification))
             
             # 6. Update AIJob and Document
             cur.execute("""
