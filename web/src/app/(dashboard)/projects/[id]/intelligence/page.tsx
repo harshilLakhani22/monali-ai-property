@@ -1,10 +1,11 @@
 import { prisma } from '@/lib/prisma'
 import { IntelligenceClient } from './IntelligenceClient'
 
-export default async function IntelligencePage({ params }: { params: { id: string } }) {
+export default async function IntelligencePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: projectId } = await params;
   // Fetch documents for the project, their intelligence extraction jobs, and extractions
   const documents = await prisma.document.findMany({
-    where: { projectId: params.id },
+    where: { projectId },
     include: {
       aiJobs: {
         where: { type: 'intelligence_extraction' },
@@ -28,7 +29,7 @@ export default async function IntelligencePage({ params }: { params: { id: strin
 
   return (
     <div className="max-w-6xl mx-auto">
-      <IntelligenceClient projectId={params.id} documents={formattedDocs} />
+      <IntelligenceClient projectId={projectId} documents={formattedDocs} />
     </div>
   )
 }

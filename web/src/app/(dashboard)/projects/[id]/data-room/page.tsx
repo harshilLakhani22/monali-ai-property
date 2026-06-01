@@ -2,8 +2,8 @@ import { uploadDocument } from "@/lib/actions/documents";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 
-export default async function DataRoomPage({ params }: { params: { id: string } }) {
-  const projectId = params.id;
+export default async function DataRoomPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: projectId } = await params;
 
   // Fetch documents and their related AI jobs
   const documents = await prisma.document.findMany({
