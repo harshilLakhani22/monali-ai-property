@@ -37,7 +37,7 @@ export async function extractIntelligence(projectId: string, documentId: string)
       throw new Error('Failed to start extraction')
     }
 
-    try { revalidatePath(`/projects/${projectId}/intelligence`) } catch (e) {}
+    try { revalidatePath(`/projects/${projectId}/intelligence`) } catch {}
     return { success: true }
   } catch (error) {
     console.error('Extraction trigger error:', error)
@@ -56,7 +56,7 @@ export async function updateExtraction(extractionId: string, projectId: string, 
       editedAt: new Date(),
     }
   })
-  try { revalidatePath(`/projects/${projectId}/intelligence`) } catch (e) {}
+  try { revalidatePath(`/projects/${projectId}/intelligence`) } catch {}
 }
 
 export async function verifyExtraction(extractionId: string, projectId: string) {
@@ -93,7 +93,7 @@ export async function verifyExtraction(extractionId: string, projectId: string) 
     }
   })
 
-  try { revalidatePath(`/projects/${projectId}/intelligence`) } catch (e) {}
+  try { revalidatePath(`/projects/${projectId}/intelligence`) } catch {}
 }
 
 export async function rejectExtraction(extractionId: string, projectId: string, reason?: string) {
@@ -111,8 +111,8 @@ export async function rejectExtraction(extractionId: string, projectId: string, 
     await prisma.constraint.delete({
       where: { extractionId: extractionId }
     })
-  } catch(e) {
+  } catch {
     // Ignore if not found
   }
-  try { revalidatePath(`/projects/${projectId}/intelligence`) } catch (e) {}
+  try { revalidatePath(`/projects/${projectId}/intelligence`) } catch {}
 }

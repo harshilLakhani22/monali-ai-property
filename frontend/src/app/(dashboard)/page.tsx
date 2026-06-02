@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Plus, Building2, Map, FileText, ArrowRight, Clock, Sparkles } from "lucide-react"
+import { Plus, Building2, Map, FileText, ArrowRight, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/server"
 import { prisma } from "@/lib/prisma"

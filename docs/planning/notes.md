@@ -12,3 +12,8 @@ assests improvements across the website.
 
 dark theme color (completely replace the grey-dark color with something best).
 
+
+auth scrren password show button.
+forgot password feature.
+
+on running dispaly different color text.

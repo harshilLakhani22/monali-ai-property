@@ -1,4 +1,3 @@
-import { LayoutDashboard, FileText, BrainCircuit, BookOpen, Layers, Calculator, FileOutput } from "lucide-react"
 import { notFound, redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { prisma } from "@/lib/prisma"
