@@ -51,8 +51,9 @@ This document tracks the high-level milestones for the Monali AI Minimum Viable 
 - [x] Configured idempotent server actions to ensure data persistence without duplication.
 
 ## ⚪ Future Milestones (To Be Defined)
-- **Milestone 6:** Spatial Concept Generation & Massing Models
-- **Milestone 7:** Costing & Final Reporting generation
+- **Milestone 6:** Brief Builder (Client & Functional Requirements)
+- **Milestone 7:** Spatial Concept Generation & Massing Models
+- **Milestone 8:** Costing & Final Reporting generation
 
 ---
 
