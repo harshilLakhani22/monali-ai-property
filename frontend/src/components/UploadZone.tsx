@@ -87,7 +87,7 @@ export function UploadZone({ action }: { action: (formData: FormData) => Promise
               </div>
               <h3 className="mb-2 text-xl font-semibold text-foreground">Upload your document</h3>
               <p className="mb-6 text-sm text-muted-foreground max-w-sm">
-                Drag and drop your PDF here, or click to browse. We'll automatically extract the zoning rules.
+                Drag and drop your PDF here, or click to browse. We&apos;ll automatically extract the zoning rules.
               </p>
               <div className="px-6 py-2.5 rounded-full bg-background border border-border text-sm font-medium shadow-sm">
                 Select a file

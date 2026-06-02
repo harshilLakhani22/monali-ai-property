@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, FileText, BrainCircuit, BookOpen, Layers, Calculator, FileOutput } from "lucide-react"
+import { LayoutDashboard, FileText, BrainCircuit, BookOpen, Layers, Calculator, FileOutput, MapPin } from "lucide-react"
 import { motion } from "framer-motion"
 
 export function ProjectNav({ projectId }: { projectId: string }) {
@@ -12,6 +12,7 @@ export function ProjectNav({ projectId }: { projectId: string }) {
     { name: "Overview", href: `/projects/${projectId}`, icon: LayoutDashboard },
     { name: "Data Room", href: `/projects/${projectId}/data-room`, icon: FileText },
     { name: "Intelligence", href: `/projects/${projectId}/intelligence`, icon: BrainCircuit },
+    { name: "Site Details", href: `/projects/${projectId}/stand`, icon: MapPin },
     { name: "Brief", href: `/projects/${projectId}/brief`, icon: BookOpen },
     { name: "Concepts", href: `/projects/${projectId}/concepts`, icon: Layers },
     { name: "Costing", href: `/projects/${projectId}/costing`, icon: Calculator },

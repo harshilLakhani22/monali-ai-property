@@ -53,13 +53,27 @@ model Project {
 }
 
 model Stand {
-  id          String   @id @default(uuid())
-  projectId   String   @unique
-  project     Project  @relation(fields: [projectId], references: [id])
-  erfNumber   String?
-  boundaries  Json?    // Placeholder for Milestone 1 (PostGIS deferred)
-  slope       String?
-  roadAccess  String?
+  id                String   @id @default(uuid())
+  projectId         String   @unique
+  project           Project  @relation(fields: [projectId], references: [id])
+  erfNumber         String?
+  standArea         Float?
+  standType         String?
+  latitude          Float?
+  longitude         Float?
+  googlePinUrl      String?
+  roadAccessSide    String?
+  northDirection    String?
+  northAngleDeg     Float?
+  slopeCondition    String?
+  viewDirection     String?
+  privacyNotes      String?
+  siteRisks         String?
+  contourNotes      String?
+  geometryJson      Json?
+  sourceDocumentIds Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now()) @updatedAt
 }
 
 model Document {

@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { LayoutDashboard, FileText, BrainCircuit, BookOpen, Layers, Calculator, FileOutput } from "lucide-react"
 import { notFound, redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
@@ -34,15 +33,7 @@ export default async function ProjectWorkspaceLayout({
     notFound()
   }
 
-  const tabs = [
-    { name: "Overview", href: `/projects/${id}`, icon: LayoutDashboard },
-    { name: "Data Room", href: `/projects/${id}/data-room`, icon: FileText },
-    { name: "Intelligence", href: `/projects/${id}/intelligence`, icon: BrainCircuit },
-    { name: "Brief", href: `/projects/${id}/brief`, icon: BookOpen },
-    { name: "Concepts", href: `/projects/${id}/concepts`, icon: Layers },
-    { name: "Costing", href: `/projects/${id}/costing`, icon: Calculator },
-    { name: "Report", href: `/projects/${id}/report`, icon: FileOutput },
-  ]
+  // Navigation logic is handled inside ProjectNav component.
 
   return (
     <div className="space-y-6">
