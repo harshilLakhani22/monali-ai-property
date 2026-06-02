@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { extractIntelligence, verifyExtraction, rejectExtraction, updateExtraction } from '@/app/actions/intelligence'
 import { Button } from '@/components/ui/button'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 
 type Extraction = {
   id: string
@@ -46,6 +47,16 @@ export function IntelligenceClient({
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editValues, setEditValues] = useState<{ value: string, unit: string }>({ value: '', unit: '' })
   const [actionLoading, setActionLoading] = useState<Set<string>>(new Set())
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
+
+  const toggleCollapse = (id: string) => {
+    setCollapsedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   const handleExtract = async (documentId: string) => {
     setLoadingIds(prev => new Set(prev).add(documentId))
@@ -102,51 +113,74 @@ export function IntelligenceClient({
             const hasJob = !!doc.intelligenceJob
             const jobFailed = doc.intelligenceJob?.status === 'failed'
 
+            const isCollapsed = collapsedIds.has(doc.id)
+
             return (
               <div key={doc.id} className="p-1.5 rounded-3xl bg-black/5 dark:bg-white/5 border border-border">
                 <div className="rounded-[calc(1.5rem-0.375rem)] border border-border bg-card shadow-sm overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border bg-black/5 dark:bg-white/5 p-5 gap-4">
-                  <div>
-                    <h3 className="text-base font-semibold text-foreground">{doc.fileName}</h3>
-                    <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="capitalize">Status: {doc.status}</span>
-                      {hasJob && (
-                        <>
-                          <span>&bull;</span>
+                <div 
+                  className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border bg-black/5 dark:bg-white/5 p-5 gap-4 cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                  onClick={() => toggleCollapse(doc.id)}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="text-muted-foreground">
+                      {isCollapsed ? <ChevronDown className="h-5 w-5" /> : <ChevronUp className="h-5 w-5" />}
+                    </div>
+                    <div>
+                      <h3 className="text-base font-semibold text-foreground">{doc.fileName}</h3>
+                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        {!hasJob && <span className="capitalize">Status: {doc.status}</span>}
+                        {hasJob && (
                           <span className={`font-semibold uppercase tracking-wider text-[10px] px-2 py-0.5 rounded-full ${
                             doc.intelligenceJob?.status === 'completed' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
                             jobFailed ? 'bg-destructive/10 text-destructive' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
                           }`}>
                             Job: {doc.intelligenceJob?.status}
                           </span>
-                        </>
+                        )}
+                      </div>
+                      {hasJob && doc.intelligenceJob?.message && doc.intelligenceJob?.status !== 'completed' && !jobFailed && (
+                        <div className="mt-1.5">
+                          <span className="text-[10px] uppercase font-bold tracking-widest text-blue-500 animate-pulse">{doc.intelligenceJob.message}</span>
+                        </div>
                       )}
                     </div>
-                    {hasJob && doc.intelligenceJob?.message && doc.intelligenceJob?.status !== 'completed' && !jobFailed && (
-                      <div className="mt-1.5">
-                        <span className="text-[10px] uppercase font-bold tracking-widest text-blue-500 animate-pulse">{doc.intelligenceJob.message}</span>
-                      </div>
+                  </div>
+                  <div onClick={e => e.stopPropagation()}>
+                    {doc.extractions.length > 0 ? (
+                      <Button 
+                        onClick={() => handleExtract(doc.id)} 
+                        disabled={isExtracting}
+                        variant="outline"
+                        size="sm"
+                        className="rounded-full h-9 cursor-pointer text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800/30 dark:hover:bg-blue-500/10"
+                      >
+                        {isExtracting ? 'Re-extracting...' : 'Re-extract'}
+                      </Button>
+                    ) : (
+                      <Button 
+                        onClick={() => handleExtract(doc.id)} 
+                        disabled={isExtracting}
+                        className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 h-10 w-full sm:w-auto cursor-pointer"
+                      >
+                        {isExtracting ? 'Extracting...' : 'Extract Intelligence'}
+                      </Button>
                     )}
                   </div>
-                  <Button 
-                    onClick={() => handleExtract(doc.id)} 
-                    disabled={isExtracting}
-                    className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 h-10 w-full sm:w-auto"
-                  >
-                    {isExtracting ? 'Extracting...' : 'Extract Intelligence'}
-                  </Button>
                 </div>
 
-                {/* Error Log */}
-                {jobFailed && doc.intelligenceJob?.errorLog && (
-                  <div className="bg-destructive/10 p-4 text-sm text-destructive border-b border-destructive/20 font-medium">
-                    <span className="font-bold tracking-wide uppercase text-xs mr-2">Error:</span>{doc.intelligenceJob.errorLog}
-                  </div>
-                )}
+                {!isCollapsed && (
+                  <>
+                  {/* Error Log */}
+                  {jobFailed && doc.intelligenceJob?.errorLog && (
+                    <div className="bg-destructive/10 p-4 text-sm text-destructive border-b border-destructive/20 font-medium">
+                      <span className="font-bold tracking-wide uppercase text-xs mr-2">Error:</span>{doc.intelligenceJob.errorLog}
+                    </div>
+                  )}
 
-                {/* Extractions Grid */}
-                <div className="p-5 flex-1 bg-card">
+                  {/* Extractions Grid */}
+                  <div className="p-5 flex-1 bg-card">
                   {doc.extractions.length === 0 ? (
                     <div className="flex flex-col items-center justify-center text-center py-12 text-sm text-muted-foreground border border-dashed border-border rounded-2xl bg-black/5 dark:bg-white/5">
                       {isExtracting ? 'Analyzing document with Gemini...' : 'No data extracted yet. Click the button above to begin.'}
@@ -246,6 +280,8 @@ export function IntelligenceClient({
                     </div>
                   )}
                 </div>
+                  </>
+                )}
                 </div>
               </div>
             )

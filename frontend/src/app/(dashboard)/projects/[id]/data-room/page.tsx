@@ -1,4 +1,4 @@
-import { uploadDocument } from "@/lib/actions/documents";
+import { uploadDocument, deleteDocument } from "@/lib/actions/documents";
 import { prisma } from "@/lib/prisma";
 import { UploadZone } from "@/components/UploadZone";
 import { PendingJobPoller } from "@/components/PendingJobPoller";
@@ -87,6 +87,14 @@ export default async function DataRoomPage({ params }: { params: Promise<{ id: s
                             )}
                           </>
                         )}
+                        <form action={async () => {
+                          'use server';
+                          await deleteDocument(doc.id, projectId);
+                        }}>
+                          <Button variant="outline" size="sm" type="submit" className="h-8 text-xs rounded-full text-destructive hover:text-destructive border-destructive/20 hover:bg-destructive/10 cursor-pointer">
+                            Delete Document
+                          </Button>
+                        </form>
                       </div>
                     </div>
                     {doc.chunks.length > 0 && (

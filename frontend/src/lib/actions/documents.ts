@@ -105,3 +105,53 @@ export async function uploadDocument(projectId: string, formData: FormData) {
     return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
   }
 }
+
+export async function deleteDocument(documentId: string, projectId: string) {
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      throw new Error('Not authenticated');
+    }
+    
+    // First, verify the document exists and belongs to this project
+    const doc = await prisma.document.findUnique({
+      where: { id: documentId }
+    });
+    
+    if (!doc || doc.projectId !== projectId) {
+      throw new Error('Document not found');
+    }
+
+    const extractions = await prisma.extraction.findMany({ 
+      where: { documentId }, 
+      select: { id: true } 
+    });
+    const extractionIds = extractions.map(e => e.id);
+
+    // Delete related records manually because onDelete: Cascade is not setup
+    await prisma.$transaction([
+      prisma.constraint.deleteMany({ where: { extractionId: { in: extractionIds } } }),
+      prisma.extraction.deleteMany({ where: { documentId } }),
+      prisma.aIJob.deleteMany({ where: { documentId } }),
+      prisma.documentChunk.deleteMany({ where: { documentId } }),
+      prisma.document.delete({ where: { id: documentId } }),
+    ]);
+
+    // Delete from supabase storage
+    const supabaseAdmin = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    await supabaseAdmin.storage.from('documents').remove([doc.url]);
+
+    revalidatePath(`/projects/${projectId}/data-room`);
+    revalidatePath(`/projects/${projectId}/intelligence`);
+    
+    return { success: true };
+  } catch (error: unknown) {
+    console.error('Delete document error:', error);
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+  }
+}

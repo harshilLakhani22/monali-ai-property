@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { IntelligenceClient } from './IntelligenceClient'
+import { PendingJobPoller } from '@/components/PendingJobPoller'
 
 export default async function IntelligencePage({ params }: { params: Promise<{ id: string }> }) {
   const { id: projectId } = await params;
@@ -27,8 +28,13 @@ export default async function IntelligencePage({ params }: { params: Promise<{ i
     extractions: doc.extractions
   }))
 
+  const hasPendingJobs = formattedDocs.some(doc => 
+    doc.intelligenceJob?.status === 'pending' || doc.intelligenceJob?.status === 'running'
+  )
+
   return (
     <div className="max-w-6xl mx-auto">
+      <PendingJobPoller hasPendingJobs={hasPendingJobs} />
       <IntelligenceClient projectId={projectId} documents={formattedDocs} />
     </div>
   )

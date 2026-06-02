@@ -11,7 +11,7 @@ export function PendingJobPoller({ hasPendingJobs }: { hasPendingJobs: boolean }
 
     const interval = setInterval(() => {
       router.refresh();
-    }, 3000); // Poll every 3 seconds
+    }, 5000); // Poll every 5 seconds
 
     return () => clearInterval(interval);
   }, [hasPendingJobs, router]);
