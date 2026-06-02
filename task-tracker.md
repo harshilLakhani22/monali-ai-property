@@ -42,8 +42,15 @@ This document tracks the high-level milestones for the Monali AI Minimum Viable 
 - [x] UI workspace for inspecting `sourceText`, making inline edits, and verifying/rejecting.
 - [x] Server actions with strict idempotency (upserts based on `extractionId`).
 
+## 🟢 Milestone 5: Site & Stand Details (Completed)
+**Goal:** Capture exact physical and geographical property information as the foundation for AI layout generation.
+**What we implemented:**
+- [x] Extended the Prisma `Stand` model with fields for area, type, coordinates, orientation, slope, and risk notes.
+- [x] Built the **Site Details** interactive form with strict dropdowns and responsive states.
+- [x] Implemented instant Site Intelligence Summary side-panel.
+- [x] Configured idempotent server actions to ensure data persistence without duplication.
+
 ## ⚪ Future Milestones (To Be Defined)
-- **Milestone 5:** AI Intelligence Engine (Zoning rule extraction, feasibility logic)
 - **Milestone 6:** Spatial Concept Generation & Massing Models
 - **Milestone 7:** Costing & Final Reporting generation
 
