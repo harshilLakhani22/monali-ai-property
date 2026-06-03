@@ -1,9 +1,10 @@
 'use server';
 
-import { createClient } from '../supabase/server';
+
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { prisma } from '../prisma';
 import { revalidatePath } from 'next/cache';
+import { requireUserProjectAccess } from '../auth-helpers';
 
 let API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 if (!API_URL.endsWith('/api')) {
@@ -17,12 +18,7 @@ export async function uploadDocument(projectId: string, formData: FormData) {
       throw new Error('No file provided');
     }
 
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      throw new Error('Not authenticated');
-    }
+    await requireUserProjectAccess(projectId);
 
     // 1. Upload to Supabase Storage (documents bucket)
     const timestamp = Date.now();
@@ -108,12 +104,7 @@ export async function uploadDocument(projectId: string, formData: FormData) {
 
 export async function deleteDocument(documentId: string, projectId: string) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      throw new Error('Not authenticated');
-    }
+    await requireUserProjectAccess(projectId);
     
     // First, verify the document exists and belongs to this project
     const doc = await prisma.document.findUnique({

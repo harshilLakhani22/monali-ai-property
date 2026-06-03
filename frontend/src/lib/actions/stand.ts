@@ -1,17 +1,13 @@
 'use server';
 
-import { createClient } from '../supabase/server';
+
 import { prisma } from '../prisma';
 import { revalidatePath } from 'next/cache';
+import { requireUserProjectAccess } from '../auth-helpers';
 
 export async function getStandDetails(projectId: string) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      throw new Error('Not authenticated');
-    }
+    await requireUserProjectAccess(projectId);
 
     const project = await prisma.project.findUnique({
       where: { id: projectId },
@@ -31,20 +27,7 @@ export async function getStandDetails(projectId: string) {
 
 export async function upsertStandDetails(projectId: string, data: Omit<Partial<import('@prisma/client').Stand>, 'id' | 'projectId' | 'geometryJson' | 'sourceDocumentIds'>) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      throw new Error('Not authenticated');
-    }
-
-    const project = await prisma.project.findUnique({
-      where: { id: projectId }
-    });
-
-    if (!project) {
-      throw new Error('Project not found');
-    }
+    await requireUserProjectAccess(projectId);
 
     const stand = await prisma.stand.upsert({
       where: { projectId },

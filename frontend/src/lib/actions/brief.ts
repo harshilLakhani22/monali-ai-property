@@ -3,8 +3,10 @@
 import { prisma } from '@/lib/prisma'
 import { BriefSchema, BriefData } from '../validations/brief'
 import { revalidatePath } from 'next/cache'
+import { requireUserProjectAccess } from '@/lib/auth-helpers'
 
 export async function getBriefForProject(projectId: string) {
+  await requireUserProjectAccess(projectId)
   const brief = await prisma.brief.findUnique({
     where: { projectId }
   })
@@ -24,6 +26,7 @@ export async function getBriefForProject(projectId: string) {
 import { Prisma } from '@prisma/client'
 
 export async function upsertBrief(projectId: string, data: BriefData) {
+  await requireUserProjectAccess(projectId)
   const parsed = BriefSchema.safeParse(data)
   
   if (!parsed.success) {

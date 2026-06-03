@@ -2,8 +2,10 @@
 
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { requireUserProjectAccess } from '@/lib/auth-helpers'
 
 export async function extractIntelligence(projectId: string, documentId: string) {
+  await requireUserProjectAccess(projectId)
   try {
     // 1. Create a new AIJob for extraction
     const aiJob = await prisma.aIJob.create({
@@ -46,6 +48,7 @@ export async function extractIntelligence(projectId: string, documentId: string)
 }
 
 export async function updateExtraction(extractionId: string, projectId: string, data: { value?: string, unit?: string, label?: string, category?: string }) {
+  await requireUserProjectAccess(projectId)
   await prisma.extraction.update({
     where: { id: extractionId },
     data: {
@@ -60,6 +63,7 @@ export async function updateExtraction(extractionId: string, projectId: string, 
 }
 
 export async function verifyExtraction(extractionId: string, projectId: string) {
+  await requireUserProjectAccess(projectId)
   const extraction = await prisma.extraction.findUnique({ where: { id: extractionId } })
   if (!extraction) throw new Error('Extraction not found')
 
@@ -97,6 +101,7 @@ export async function verifyExtraction(extractionId: string, projectId: string) 
 }
 
 export async function rejectExtraction(extractionId: string, projectId: string, reason?: string) {
+  await requireUserProjectAccess(projectId)
   await prisma.extraction.update({
     where: { id: extractionId },
     data: {
