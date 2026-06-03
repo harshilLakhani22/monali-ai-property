@@ -1,10 +1,35 @@
-export default function ConceptsPage() {
+import { getConceptsForProject } from '@/lib/actions/concepts'
+import { ConceptGenerator } from './ConceptGenerator'
+import { ConceptCard } from './ConceptCard'
+
+export default async function ConceptsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  
+  const concepts = await getConceptsForProject(id)
+
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-      <h2 className="text-lg font-medium text-zinc-900">Generated Concepts</h2>
-      <p className="mt-2 text-sm text-zinc-500">
-        Placeholder for Milestone 1. Once the AI finishes generation, the spatial concepts and massing models will appear here.
-      </p>
+    <div className="max-w-6xl mx-auto space-y-8">
+      <div>
+        <h2 className="text-lg font-medium text-zinc-900">Concept Generation v1</h2>
+        <p className="mt-1 text-sm text-zinc-500 max-w-3xl">
+          Early-stage architectural concepts synthesized from your verified constraints, brief, and stand details.
+        </p>
+      </div>
+
+      {concepts.length === 0 ? (
+        <ConceptGenerator projectId={id} />
+      ) : (
+        <div>
+          <div className="flex justify-end mb-6">
+            <ConceptGenerator projectId={id} hasConcepts={true} />
+          </div>
+          <div className="space-y-8">
+            {concepts.map((concept) => (
+              <ConceptCard key={concept.id} concept={concept} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
