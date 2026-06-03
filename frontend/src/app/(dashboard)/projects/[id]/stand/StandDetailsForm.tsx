@@ -4,6 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { upsertStandDetails } from '@/lib/actions/stand'
 import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export function StandDetailsForm({ projectId, initialData }: { projectId: string, initialData: Partial<import('@prisma/client').Stand> }) {
   const router = useRouter()
@@ -61,6 +68,25 @@ export function StandDetailsForm({ projectId, initialData }: { projectId: string
   const labelClass = "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
   const textareaClass = "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 
+  const renderSelect = (name: keyof typeof formData, placeholder: string, options: string[]) => {
+    const val = formData[name] as string
+    return (
+      <Select 
+        value={val || undefined} 
+        onValueChange={v => setFormData({ ...formData, [name]: v || '' })}
+      >
+        <SelectTrigger className={inputClass}>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map(opt => (
+            <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    )
+  }
+
   return (
     <div className="grid gap-8 md:grid-cols-3">
       <div className="md:col-span-2">
@@ -80,10 +106,7 @@ export function StandDetailsForm({ projectId, initialData }: { projectId: string
               </div>
               <div className="space-y-2 col-span-2">
                 <label className={labelClass}>Stand Type</label>
-                <select name="standType" value={formData.standType} onChange={handleChange} className={inputClass}>
-                  <option value="">Select Type...</option>
-                  {["Standard", "Premium", "Corner", "Narrow", "Sloped", "Irregular", "Unknown"].map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                </select>
+                {renderSelect("standType", "Select Type...", ["Standard", "Premium", "Corner", "Narrow", "Sloped", "Irregular", "Unknown"])}
               </div>
             </div>
           </div>
@@ -113,17 +136,11 @@ export function StandDetailsForm({ projectId, initialData }: { projectId: string
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className={labelClass}>Road Access Side</label>
-                <select name="roadAccessSide" value={formData.roadAccessSide} onChange={handleChange} className={inputClass}>
-                  <option value="">Select Access...</option>
-                  {["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West", "Multiple", "Unknown"].map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                </select>
+                {renderSelect("roadAccessSide", "Select Access...", ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West", "Multiple", "Unknown"])}
               </div>
               <div className="space-y-2">
                 <label className={labelClass}>North Direction</label>
-                <select name="northDirection" value={formData.northDirection} onChange={handleChange} className={inputClass}>
-                  <option value="">Select North...</option>
-                  {["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West", "Unknown"].map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                </select>
+                {renderSelect("northDirection", "Select North...", ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West", "Unknown"])}
               </div>
               <div className="space-y-2 col-span-2">
                 <label className={labelClass}>North Angle (Degrees) - Optional</label>
@@ -138,10 +155,7 @@ export function StandDetailsForm({ projectId, initialData }: { projectId: string
             <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
                 <label className={labelClass}>Slope Condition</label>
-                <select name="slopeCondition" value={formData.slopeCondition} onChange={handleChange} className={inputClass}>
-                  <option value="">Select Slope...</option>
-                  {["Flat", "Gentle", "Moderate", "Steep", "Terraced", "Unknown"].map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                </select>
+                {renderSelect("slopeCondition", "Select Slope...", ["Flat", "Gentle", "Moderate", "Steep", "Terraced", "Unknown"])}
               </div>
               <div className="space-y-2">
                 <label className={labelClass}>Contour Notes</label>
