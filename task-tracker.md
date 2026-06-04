@@ -6,56 +6,63 @@ This document tracks the high-level milestones for the Monali AI Minimum Viable 
 **Goal:** Establish the premium visual identity and routing structure for the SaaS application.
 **What we implemented:**
 - Initialized Next.js App Router with Tailwind CSS, TypeScript, and shadcn/ui components.
-- Designed high-end, premium aesthetic Login and Signup screens with glassmorphism and architectural imagery.
+- Designed high-end, premium aesthetic Login and Signup screens.
 - Built the main Dashboard with a portfolio overview and metrics.
-- Built the "Create New Project" interactive form with visual project type selection.
-- Created the Project Workspace shell (`/projects/[id]`) with a navigation sidebar (Overview, Data Room, Intelligence, Brief, Concepts, Costing, Report).
+- Built the Project Workspace shell (`/projects/[id]`) with navigation sidebar.
 
 ## 🟢 Milestone 2: SaaS Backend Wiring (Completed)
 **Goal:** Connect the frontend shell to a real database and authentication system.
 **What we implemented:**
 - Set up **Supabase Auth** (Next.js Server Actions, Cookie Management, Callback Routes).
-- Configured **Prisma ORM** with Supabase PostgreSQL (Connection Pooling).
-- Built route protection middleware to redirect unauthenticated users securely.
-- Wired up the "Create Workspace" form to dynamically insert real projects into the database.
+- Configured **Prisma ORM** with Supabase PostgreSQL.
 - Auto-provisioned a "My Workspace" Organization for new users upon signup.
-- Replaced dashboard dummy data with real project fetching.
 
 ## 🟢 Milestone 3: FastAPI AI Microservice (Completed)
-**Goal:** Initialize the dedicated Python backend for heavy AI processing, document extraction, and spatial layout algorithms.
+**Goal:** Initialize the dedicated Python backend for heavy AI processing.
 **What we implemented:**
 - Create the Python virtual environment and FastAPI server structure.
 - Build basic endpoints (Health Check, Generate Concept stub).
 - Set up CORS to communicate securely with the Next.js frontend.
-- Establish the foundational architecture for integrating future AI models.
 
-## 🟢 Milestone 4: Data Room & Document Processing
+## 🟢 Milestone 4: Data Room & Document Processing (Completed)
 **Goal:** Process uploaded PDFs, extract text, and classify heuristic chunks.
-**What we implemented:**
-- [x] **Phase 4A:** Setup Next.js -> Supabase Storage -> FastAPI -> PyMuPDF chunking pipeline.
-- [x] **Phase 4B:** Implement chunk classification heuristic and Next.js processing status UI.
-- [x] **Phase 4C:** Gemini intelligence extraction (manual trigger), structured JSON parsing, and unverified Extraction rows.
-- [x] **Phase 4D:** Intelligence Verification Workflow
-**Status**: Completed
+- **Phase 4A:** Next.js -> Supabase Storage -> FastAPI -> PyMuPDF chunking pipeline.
+- **Phase 4B:** Chunk classification heuristic and Next.js processing status UI.
+- **Phase 4C:** Gemini structured extraction.
+- **Phase 4D:** Intelligence verification workflow and Constraint promotion.
 
-- [x] Prisma updates (edited fields, verification tracking, `Constraint` map).
-- [x] UI workspace for inspecting `sourceText`, making inline edits, and verifying/rejecting.
-- [x] Server actions with strict idempotency (upserts based on `extractionId`).
+## 🟢 Security Hardening (Completed)
+- Supabase RLS SELECT-only policies.
+- `requireUserProjectAccess` helper.
+- Patched project-scoped Server Actions.
 
 ## 🟢 Milestone 5: Site & Stand Details (Completed)
 **Goal:** Capture exact physical and geographical property information as the foundation for AI layout generation.
-**What we implemented:**
-- [x] Extended the Prisma `Stand` model with fields for area, type, coordinates, orientation, slope, and risk notes.
-- [x] Built the **Site Details** interactive form with strict dropdowns and responsive states.
-- [x] Implemented instant Site Intelligence Summary side-panel.
-- [x] Configured idempotent server actions to ensure data persistence without duplication.
+- Extended the Prisma `Stand` model.
+- Built the **Site Details** interactive form with strict dropdowns and responsive states.
 
-## ⚪ Future Milestones (To Be Defined)
-- **Milestone 6:** Brief Builder (Client & Functional Requirements)
-- **Milestone 7:** Spatial Concept Generation & Massing Models
-- **Milestone 8:** Costing & Final Reporting generation
+## 🟢 Milestone 6: Brief Builder (Completed)
+**Goal:** Capture user functional requirements.
+- Completed the UI for interactive client & functional brief requirements.
+
+## 🟢 Milestone 7: Concept Generation v1 (Completed)
+**Goal:** Auto-generate conceptual layouts based on extracted constraints and the brief.
+- Generates 2 concept options using the Vercel AI SDK and Gemini model.
+- Includes Concept Scores, room arrangement, footprint logic, compliance, site response, and risk notes.
+- MVP Visual Conceptual Schematic diagram.
+
+## 🟡 Upcoming Milestones
+- **Milestone 8: Cost Estimation**
+- **Milestone 9: Final Report Generation**
+
+## ⚪ Later / Post-MVP
+- CAD/BIM
+- Detailed BOQ
+- Municipal-readiness checks
+- PostGIS/spatial automation
+- Advanced terrain/layout engines.
 
 ---
 
 ### Summary of Progress
-We have successfully built the complete architectural foundation for Monali AI! The Next.js + PostgreSQL SaaS shell is fully operational and securely handling users, routing, and database state. The Python FastAPI microservice is successfully initialized, CORS-configured, and actively communicating with the Next.js frontend. The infrastructure is entirely ready for the heavy AI logic to be injected into the Python backend!
+We have successfully built the complete architectural foundation for Monali AI, including the full intelligence extraction and concept generation pipelines. The Next.js + PostgreSQL SaaS shell securely handles users, routing, and database state. The Python FastAPI microservice is actively communicating with the Next.js frontend. Heavy AI logic has been injected and successfully proven in the Data Room intelligence workflow (Phase 4) and Concept Generation (Phase 7). We are now moving forward to Cost Estimation.

@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Monali AI Frontend
 
-## Getting Started
+This is the Next.js frontend application for the **Monali AI Minimum Viable Product (MVP)**. It serves as the primary user interface and SaaS shell, communicating with Supabase for the database/auth and our FastAPI backend for heavy PDF extraction and document chunking.
 
-First, run the development server:
+## 🚀 Tech Stack
+- **Framework:** [Next.js](https://nextjs.org/) (App Router)
+- **Styling:** Tailwind CSS + shadcn/ui + Framer Motion
+- **Database / ORM:** Prisma ORM
+- **Auth & Storage:** Supabase (Auth, Postgres, Storage)
+- **AI Integration:** Vercel AI SDK + Google Gemini (`gemini-3.1-flash-lite`)
+- **Backend microservice:** FastAPI (Python) for processing
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠️ Local Setup
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **Install Dependencies:**
+   ```bash
+   cd frontend
+   npm install
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. **Required Environment Variables:**
+   Create a `.env` file in the `frontend` root. **🚨 WARNING: NEVER commit `.env` files to Git. They are ignored by `.gitignore`.**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```env
+   # Frontend Database connection (Prisma)
+   DATABASE_URL="postgresql://user:password@aws-0-xyz.pooler.supabase.com:6543/postgres?pgbouncer=true"
+   DIRECT_URL="postgresql://user:password@aws-0-xyz.pooler.supabase.com:5432/postgres"
 
-## Learn More
+   # Supabase Keys
+   NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+   NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+   SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 
-To learn more about Next.js, take a look at the following resources:
+   # Google Generative AI (Vercel AI SDK)
+   GOOGLE_GENERATIVE_AI_API_KEY="your-gemini-key"
+   GOOGLE_GENERATIVE_AI_MODEL="gemini-3.1-flash-lite"
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Required Backend Environment Variables:**
+   The Python backend (FastAPI) requires its own `.env` file in the `backend` folder:
+   ```env
+   DATABASE_URL="postgresql://user:password@aws-0-xyz.pooler.supabase.com:6543/postgres"
+   GEMINI_API_KEY="your-gemini-key"
+   GEMINI_MODEL="gemini-3.1-flash-lite"
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🏃‍♂️ How to Run
 
-## Deploy on Vercel
+1. **Run the Frontend (Next.js):**
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Run the Backend (FastAPI):**
+   Open a separate terminal:
+   ```bash
+   cd backend
+   fastapi dev app/main.py
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Lint & Build (Testing before commit):**
+   ```bash
+   cd frontend
+   npm run lint
+   npm run build
+   ```
+
+## 🏗️ Completed Modules (Current State)
+- **Milestone 1:** Frontend UI/UX Shell & Routing
+- **Milestone 2:** SaaS Backend Wiring & Auth (Supabase)
+- **Milestone 3:** FastAPI Microservice Initialization
+- **Milestone 4:** Data Room & Document Intelligence Processing (PDF -> FastAPI -> Gemini Verification)
+- **Security:** RLS policies and Server Action ownership checks
+- **Milestone 5:** Site & Stand Details Workflow
+- **Milestone 6:** Brief Builder Workflow
+- **Milestone 7:** Concept Generation v1 (AI-driven layout abstraction)
+
+## 🚧 Remaining Modules
+- **Milestone 8:** Cost Estimation
+- **Milestone 9:** Final Report Generation
+- **Later/Post-MVP:** CAD/BIM integration, detailed BOQ, spatial automation.
