@@ -51,8 +51,13 @@ This document tracks the high-level milestones for the Monali AI Minimum Viable 
 - Includes Concept Scores, room arrangement, footprint logic, compliance, site response, and risk notes.
 - MVP Visual Conceptual Schematic diagram.
 
+## 🟢 Milestone 8: Cost Estimation (Completed)
+**Goal:** Automatically calculate deterministic feasibility construction costs.
+- Calculates costs based on the Area from the Brief/Concept and configurable base rates.
+- Automatically handles risk multipliers for terrain slope and design complexity.
+- Validates totals against the Client's budget cap (Under/Within/Above Budget).
+
 ## 🟡 Upcoming Milestones
-- **Milestone 8: Cost Estimation**
 - **Milestone 9: Final Report Generation**
 
 ## ⚪ Later / Post-MVP
@@ -65,4 +70,4 @@ This document tracks the high-level milestones for the Monali AI Minimum Viable 
 ---
 
 ### Summary of Progress
-We have successfully built the complete architectural foundation for Monali AI, including the full intelligence extraction and concept generation pipelines. The Next.js + PostgreSQL SaaS shell securely handles users, routing, and database state. The Python FastAPI microservice is actively communicating with the Next.js frontend. Heavy AI logic has been injected and successfully proven in the Data Room intelligence workflow (Phase 4) and Concept Generation (Phase 7). We are now moving forward to Cost Estimation.
+We have successfully built the complete architectural foundation for Monali AI, including the full intelligence extraction and concept generation pipelines. The Next.js + PostgreSQL SaaS shell securely handles users, routing, and database state. Heavy AI logic has been injected and successfully proven in the Data Room intelligence workflow (Phase 4), Concept Generation (Phase 7), and deterministic Cost Estimation (Phase 8). We are now moving forward to the final milestone: Final Report Generation.

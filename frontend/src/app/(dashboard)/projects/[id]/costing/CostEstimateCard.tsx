@@ -14,10 +14,10 @@ export function CostEstimateCard({
   const data = estimate.data as unknown as CostEstimateData
   if (!data) return null
 
-  const { breakdown, narrative, budgetAlignment, missingInputs } = data
+  const { breakdown, narrative, budgetAlignment, missingInputs, confidenceScore, currency } = data
 
   const formatMoney = (val: number) => {
-    return 'R ' + val.toLocaleString('en-US', { maximumFractionDigits: 0 })
+    return `${currency || 'R'} ` + val.toLocaleString('en-US', { maximumFractionDigits: 0 })
   }
 
   const rangeMin = (estimate.totalRange as { min?: number })?.min || 0
@@ -52,6 +52,9 @@ export function CostEstimateCard({
               <AlertCircle className="w-3.5 h-3.5" /> Budget Unknown
             </span>
           )}
+          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ml-2 ${confidenceScore >= 80 ? 'bg-blue-100 text-blue-700' : confidenceScore >= 60 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
+            Confidence: {confidenceScore}%
+          </span>
         </div>
 
         <div className="mt-4">
@@ -131,6 +134,18 @@ export function CostEstimateCard({
           <h4 className="text-sm font-semibold text-zinc-900 mb-2">Risk Factors</h4>
           <p className="text-sm text-zinc-600 leading-relaxed">{narrative.riskFactors}</p>
         </div>
+
+        {/* Assumptions */}
+        {narrative.costAssumptions && narrative.costAssumptions.length > 0 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <h4 className="text-sm font-semibold text-blue-900 mb-2">Calculation Assumptions</h4>
+            <ul className="list-disc pl-4 space-y-1 text-xs text-blue-800">
+              {narrative.costAssumptions.map((assumption, idx) => (
+                <li key={idx}>{assumption}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
       </div>
     </div>

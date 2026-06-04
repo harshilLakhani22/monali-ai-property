@@ -6,7 +6,7 @@ Monali AI is an advanced Minimum Viable Product (MVP) platform designed for auto
 1. **Data Room:** Upload raw PDF documents (Title Deeds, Zoning certificates, etc.). The AI extracts, chunks, and classifies unstructured data into verified property constraints.
 2. **Site Details & Brief:** Capture precise geographical details and user functional requirements.
 3. **Concepts:** Auto-generate conceptual block layouts and massing abstractions based on strict, verified constraints.
-4. **Cost Estimation:** *(Upcoming in Phase 8)*
+4. **Cost Estimation:** Auto-calculate deterministic feasibility costs based on concept area and configurable rates.
 5. **Final Report:** *(Upcoming in Phase 9)*
 
 ## 📂 Repository Structure
@@ -21,9 +21,10 @@ Monali AI is an advanced Minimum Viable Product (MVP) platform designed for auto
 - Phase 5: Site Details
 - Phase 6: Brief Builder
 - Phase 7: Concept Generation v1
+- Phase 8: Cost Estimation
 
 ## 🔜 Next Phase
-- **Phase 8:** Cost Estimation.
+- **Phase 9:** Final Report Generation.
 
 ## 🔒 Security Note
 This platform implements strict security:

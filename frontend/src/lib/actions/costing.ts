@@ -29,6 +29,10 @@ export async function generateCostEstimate(projectId: string, conceptVersionId: 
     throw new Error("Project or Concept not found")
   }
 
+  if (conceptVersion.concept.projectId !== projectId) {
+    throw new Error("Forbidden: ConceptVersion does not belong to this Project")
+  }
+
   const missingInputs: string[] = []
   const assumptions: string[] = []
 
