@@ -168,17 +168,21 @@ model ConceptVersion {
   visualUrl   String?  // URL to SVG/image
   data        Json?    // Detailed concept payload (MVP)
   createdAt   DateTime @default(now())
+  costEstimate CostEstimate?
 }
 
 model CostEstimate {
-  id          String   @id @default(uuid())
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id])
-  area        Float?
-  ratePerM2   Float?
-  multiplier  Float?
-  totalRange  Json     // Min, Max
-  assumptions Json
+  id               String   @id @default(uuid())
+  projectId        String
+  project          Project  @relation(fields: [projectId], references: [id])
+  conceptVersionId String   @unique
+  conceptVersion   ConceptVersion @relation(fields: [conceptVersionId], references: [id])
+  area             Float?
+  ratePerM2        Float?
+  multiplier       Float?
+  totalRange       Json     // Min, Max
+  assumptions      Json
+  data             Json?
 }
 
 model Report {
