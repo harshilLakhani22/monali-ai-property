@@ -12,6 +12,7 @@ import {
 import { toast } from "sonner"
 import { generateFinalReport } from "@/lib/actions/report"
 import { ConceptSchematic } from "../concepts/ConceptSchematic"
+import { BuildableEnvelopeCard } from "@/components/diagrams/BuildableEnvelopeCard"
 
 // Inject global @media print CSS once to hide the app shell
 const PRINT_CSS = `
@@ -143,11 +144,15 @@ function CollapsibleSection({ title, count, children }: { title: string; count?:
 export function ReportClientView({
   projectId,
   initialReport,
-  projectName
+  projectName,
+  stand,
+  constraints
 }: {
   projectId: string
   initialReport: Report | null
   projectName: string
+  stand?: any
+  constraints?: any[]
 }) {
   const [isGenerating, setIsGenerating] = useState(false)
 
@@ -278,8 +283,15 @@ export function ReportClientView({
           </section>
 
           {/* 2. Site Summary */}
-          <section>
+          <section className="print:break-inside-avoid">
             <SectionHeader num="02" icon={<MapPin className="w-4 h-4" />} title="Site Summary" />
+            
+            {stand && constraints && (
+              <div className="mb-6">
+                <BuildableEnvelopeCard standData={stand} constraints={constraints} />
+              </div>
+            )}
+
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
               {[
                 { label: 'Erf Number', value: data.siteSummary?.erfNumber },
@@ -483,6 +495,33 @@ export function ReportClientView({
                         </div>
                       )}
                     </div>
+                    {concept.rawConceptData?.exteriorDirection && (
+                      <div className="px-5 py-5 border-t border-zinc-100 bg-white print:break-inside-avoid">
+                        <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-4">Exterior Visual Direction</p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                          <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-100">
+                            <span className="block text-xs text-zinc-500 mb-1">Style</span>
+                            <span className="block text-sm text-zinc-900">{concept.rawConceptData.exteriorDirection.styleSummary}</span>
+                          </div>
+                          <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-100">
+                            <span className="block text-xs text-zinc-500 mb-1">Materials</span>
+                            <span className="block text-sm text-zinc-900">{concept.rawConceptData.exteriorDirection.materialPalette}</span>
+                          </div>
+                          <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-100">
+                            <span className="block text-xs text-zinc-500 mb-1">Roof Language</span>
+                            <span className="block text-sm text-zinc-900">{concept.rawConceptData.exteriorDirection.roofLanguage}</span>
+                          </div>
+                          <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-100">
+                            <span className="block text-xs text-zinc-500 mb-1">Landscape</span>
+                            <span className="block text-sm text-zinc-900">{concept.rawConceptData.exteriorDirection.landscapeNotes}</span>
+                          </div>
+                        </div>
+                        <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                          <span className="block text-xs text-primary font-medium mb-1">AI Render Prompt (Phase 11/12)</span>
+                          <span className="block text-sm text-zinc-700 italic">&quot;{concept.rawConceptData.exteriorDirection.aiRenderPrompt}&quot;</span>
+                        </div>
+                      </div>
+                    )}
                     {concept.rawConceptData && (
                       <div className="px-5 py-5 border-t border-zinc-100 bg-white print:break-inside-avoid">
                         <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-4">Conceptual Schematic Block Layout</p>

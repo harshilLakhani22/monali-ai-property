@@ -36,13 +36,20 @@ export async function generateFinalReport(projectId: string) {
   const briefData = brief?.data as any
   const concepts = project.concepts
 
+  // Sort concepts by latest version createdAt descending, and take top 3
+  const sortedConcepts = [...concepts].sort((a, b) => {
+    const aTime = a.versions?.[0]?.createdAt?.getTime() || 0
+    const bTime = b.versions?.[0]?.createdAt?.getTime() || 0
+    return bTime - aTime
+  }).slice(0, 3)
+
   // Fetch Constraints explicitly (only trusted Constraint rows)
   const constraints = await prisma.constraint.findMany({
     where: { projectId: projectId }
   })
 
   // Format concepts data
-  const conceptData = concepts.map(concept => {
+  const conceptData = sortedConcepts.map(concept => {
     const latestVersion = concept.versions[0]
     let costEstimateData = null
     

@@ -7,7 +7,11 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   await requireUserProjectAccess(id)
 
   const project = await prisma.project.findUnique({
-    where: { id }
+    where: { id },
+    include: {
+      stand: true,
+      constraints: { where: { extraction: { verified: true } } }
+    }
   })
   
   if (!project) return <div>Project not found</div>
@@ -25,7 +29,13 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
         </p>
       </div>
 
-      <ReportClientView projectId={id} initialReport={report} projectName={project.name} />
+      <ReportClientView 
+        projectId={id} 
+        initialReport={report} 
+        projectName={project.name} 
+        stand={project.stand}
+        constraints={project.constraints}
+      />
     </div>
   )
 }
