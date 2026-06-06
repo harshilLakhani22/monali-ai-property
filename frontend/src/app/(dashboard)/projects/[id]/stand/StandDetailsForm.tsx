@@ -11,8 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { BuildableEnvelopeCard } from '@/components/diagrams/BuildableEnvelopeCard'
 
-export function StandDetailsForm({ projectId, initialData }: { projectId: string, initialData: Partial<import('@prisma/client').Stand> }) {
+export function StandDetailsForm({ projectId, initialData, constraints }: { projectId: string, initialData: Partial<import('@prisma/client').Stand>, constraints?: import('@prisma/client').Constraint[] }) {
   const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -310,38 +311,45 @@ export function StandDetailsForm({ projectId, initialData }: { projectId: string
       </div>
 
       <div className="md:col-span-1">
-        <div className="sticky top-6 p-6 bg-primary/5 rounded-2xl border border-primary/10">
-          <h3 className="font-semibold text-lg mb-4 text-primary">Site Intelligence Summary</h3>
-          {formData.erfNumber ? (
-            <div className="space-y-4 text-sm">
-              <div>
-                <p className="text-muted-foreground">Stand</p>
-                <p className="font-medium">{formData.erfNumber} {formData.standType ? `(${formData.standType})` : ''}</p>
+        <div className="sticky top-6 space-y-8">
+          <div className="p-6 bg-primary/5 rounded-2xl border border-primary/10">
+            <h3 className="font-semibold text-lg mb-4 text-primary">Site Intelligence Summary</h3>
+            {formData.erfNumber ? (
+              <div className="space-y-4 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Stand</p>
+                  <p className="font-medium">{formData.erfNumber} {formData.standType ? `(${formData.standType})` : ''}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Size</p>
+                  <p className="font-medium">{formData.standArea ? `${formData.standArea} m²` : 'Unknown'}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Topography</p>
+                  <p className="font-medium">{formData.slopeCondition || 'Unknown'}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Orientation</p>
+                  <p className="font-medium">
+                    {formData.northDirection ? `North faces ${formData.northDirection}` : 'Unknown'}
+                    {formData.northAngleDeg ? ` (${formData.northAngleDeg}°)` : ''}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Access</p>
+                  <p className="font-medium">{formData.roadAccessSide || 'Unknown'}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-muted-foreground">Size</p>
-                <p className="font-medium">{formData.standArea ? `${formData.standArea} m²` : 'Unknown'}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Topography</p>
-                <p className="font-medium">{formData.slopeCondition || 'Unknown'}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Orientation</p>
-                <p className="font-medium">
-                  {formData.northDirection ? `North faces ${formData.northDirection}` : 'Unknown'}
-                  {formData.northAngleDeg ? ` (${formData.northAngleDeg}°)` : ''}
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Access</p>
-                <p className="font-medium">{formData.roadAccessSide || 'Unknown'}</p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Save your site details to generate the intelligence summary.
-            </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Save your site details to generate the intelligence summary.
+              </p>
+            )}
+          </div>
+
+          {/* Buildable Envelope Diagram */}
+          {formData.erfNumber && (
+            <BuildableEnvelopeCard standData={formData} constraints={constraints} />
           )}
         </div>
       </div>

@@ -9,7 +9,10 @@ export default async function StandDetailsPage({ params }: { params: Promise<{ i
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-    include: { stand: true }
+    include: { 
+      stand: true,
+      constraints: { where: { extraction: { verified: true } } }
+    }
   })
 
   if (!project) {
@@ -28,7 +31,7 @@ export default async function StandDetailsPage({ params }: { params: Promise<{ i
         </p>
       </div>
 
-      <StandDetailsForm projectId={projectId} initialData={initialData} />
+      <StandDetailsForm projectId={projectId} initialData={initialData} constraints={project.constraints} />
     </div>
   )
 }
