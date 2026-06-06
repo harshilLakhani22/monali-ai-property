@@ -6,7 +6,7 @@ export function ConceptSchematic({ data }: { data: ConceptV1 }) {
   const isCourtyard = footprint.includes('courtyard')
 
   return (
-    <div className="relative w-full min-h-[350px] bg-zinc-50 rounded-xl border border-zinc-200 overflow-hidden font-sans flex items-center justify-center p-6">
+    <div className="relative w-full min-h-[350px] bg-zinc-50 rounded-xl border border-zinc-200 overflow-hidden font-sans flex items-center justify-center p-6 print:break-inside-avoid">
       
       {/* Background Grid */}
       <div className="absolute inset-0 z-0 opacity-[0.15] pointer-events-none" 

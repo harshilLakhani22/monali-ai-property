@@ -19,6 +19,7 @@ export function BriefBuilderForm({ projectId, initialData }: { projectId: string
   const [showSuccess, setShowSuccess] = useState(false)
 
   const [data, setData] = useState<BriefData>(initialData || {})
+  const isDirty = JSON.stringify(data) !== JSON.stringify(initialData || {})
 
   const handleChange = (section: keyof BriefData, field: string, value: string | number | boolean | undefined) => {
     setData(prev => ({
@@ -257,7 +258,7 @@ export function BriefBuilderForm({ projectId, initialData }: { projectId: string
       </div>
 
       <div className="flex items-center gap-4">
-        <Button type="submit" disabled={isSaving}>
+        <Button type="submit" disabled={isSaving || !isDirty}>
           {isSaving ? "Saving..." : "Save Brief"}
         </Button>
         {showSuccess && <span className="text-sm font-medium text-green-600 dark:text-green-400">Successfully saved!</span>}

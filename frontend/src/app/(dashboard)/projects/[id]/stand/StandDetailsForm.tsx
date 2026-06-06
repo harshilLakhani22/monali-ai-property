@@ -17,7 +17,7 @@ export function StandDetailsForm({ projectId, initialData }: { projectId: string
   const [isSaving, setIsSaving] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
 
-  const [formData, setFormData] = useState({
+  const [initialState] = useState({
     erfNumber: initialData?.erfNumber || '',
     standArea: initialData?.standArea || '',
     standType: initialData?.standType || '',
@@ -33,6 +33,9 @@ export function StandDetailsForm({ projectId, initialData }: { projectId: string
     privacyNotes: initialData?.privacyNotes || '',
     siteRisks: initialData?.siteRisks || ''
   })
+
+  const [formData, setFormData] = useState(initialState)
+  const isDirty = JSON.stringify(formData) !== JSON.stringify(initialState)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -184,7 +187,7 @@ export function StandDetailsForm({ projectId, initialData }: { projectId: string
           </div>
 
           <div className="flex items-center gap-4">
-            <Button type="submit" disabled={isSaving}>
+            <Button type="submit" disabled={isSaving || !isDirty}>
               {isSaving ? "Saving..." : "Save Site Details"}
             </Button>
             {showSuccess && <span className="text-sm font-medium text-green-600 dark:text-green-400">Successfully saved!</span>}

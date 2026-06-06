@@ -20,7 +20,7 @@ export function ProjectNav({ projectId }: { projectId: string }) {
   ]
 
   return (
-    <div className="flex w-full overflow-x-auto custom-scrollbar pb-2">
+    <div className="flex w-full overflow-x-auto custom-scrollbar pb-2 print-hide">
       <nav className="inline-flex items-center p-1.5 space-x-2 bg-black/5 dark:bg-white/5 rounded-2xl border border-border/50 shadow-inner">
         {tabs.map((tab) => {
           const isActive = tab.name === "Overview" 

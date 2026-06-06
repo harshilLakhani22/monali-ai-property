@@ -36,14 +36,14 @@ export default async function ProjectWorkspaceLayout({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between print-hide">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">{project.name}</h1>
           <p className="text-sm text-zinc-500 capitalize">{project.type.replace('_', ' ')} Workspace</p>
         </div>
       </div>
 
-      <div className="border-b border-border/50">
+      <div className="border-b border-border/50 print-hide">
         <ProjectNav projectId={id} />
       </div>
 

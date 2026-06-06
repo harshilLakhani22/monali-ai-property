@@ -22,9 +22,7 @@ Monali AI is an advanced Minimum Viable Product (MVP) platform designed for auto
 - Phase 6: Brief Builder
 - Phase 7: Concept Generation v1
 - Phase 8: Cost Estimation
-
-## 🔜 Next Phase
-- **Phase 9:** Final Report Generation.
+- Phase 9: Final Report Generation
 
 ## 🔒 Security Note
 This platform implements strict security:

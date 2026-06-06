@@ -12,7 +12,7 @@ export function Sidebar() {
   const { setTheme, theme } = useTheme()
 
   return (
-    <div className="hidden md:flex h-full w-[260px] flex-col bg-transparent">
+    <div data-sidebar className="hidden md:flex h-full w-[260px] flex-col bg-transparent">
       <div className="flex h-24 items-center px-6">
         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary mr-3">
           <Hexagon className="h-6 w-6" />
@@ -80,12 +80,12 @@ export function Sidebar() {
               <Bell className="h-4 w-4" />
               <span className="sr-only">Notifications</span>
             </Button>
-            <div className="w-[1px] h-4 bg-border/50 mx-1"></div>
+            <div className="hidden w-[1px] h-4 bg-border/50 mx-1"></div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className="text-muted-foreground rounded-full hover:bg-background hover:text-foreground hover:shadow-sm h-8 w-8 transition-all relative overflow-hidden"
+              className="hidden text-muted-foreground rounded-full hover:bg-background hover:text-foreground hover:shadow-sm h-8 w-8 transition-all relative overflow-hidden"
             >
               <div className="relative flex items-center justify-center h-full w-full">
                 <SunMedium className="h-4 w-4 absolute transition-all duration-500 ease-out dark:-translate-y-8 dark:opacity-0" />
