@@ -26,7 +26,22 @@ export const ConceptV1Schema = z.object({
     privacy: z.number().min(1).max(10),
     viewQuality: z.number().min(1).max(10),
     complianceConfidence: z.number().min(1).max(10)
-  }).describe('Scores out of 10 for the concept.')
+  }).describe('Scores out of 10 for the concept.'),
+  exteriorDirection: z.object({
+    styleSummary: z.string(),
+    materialPalette: z.string(),
+    roofLanguage: z.string(),
+    facadeDirection: z.string(),
+    landscapeNotes: z.string(),
+    aiRenderPrompt: z.string()
+  }).optional().describe('Exterior visual direction and rendering instructions.'),
+  layoutSchematic: z.object({
+    footprintType: z.string().describe('e.g., L-shape, Courtyard, Linear, U-shape, Compact Block'),
+    primaryAccessSide: z.string().describe('Side for garage/entry (e.g., North, South, East, West)'),
+    livingOrientation: z.string(),
+    bedroomOrientation: z.string(),
+    privacyEdge: z.string()
+  }).optional().describe('Structured layout parameters for the schematic diagram.')
 })
 
 export type ConceptV1 = z.infer<typeof ConceptV1Schema>

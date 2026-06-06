@@ -85,6 +85,34 @@ export function ConceptCard({ concept }: { concept: Concept & { versions: Concep
         </div>
       </div>
 
+      {data.exteriorDirection && (
+        <div className="pt-6 border-t border-zinc-100">
+          <h4 className="text-sm font-semibold text-zinc-900 mb-4">Exterior Visual Direction</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-100">
+              <span className="block text-xs text-zinc-500 mb-1">Style</span>
+              <span className="block text-sm text-zinc-900">{data.exteriorDirection.styleSummary}</span>
+            </div>
+            <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-100">
+              <span className="block text-xs text-zinc-500 mb-1">Materials</span>
+              <span className="block text-sm text-zinc-900">{data.exteriorDirection.materialPalette}</span>
+            </div>
+            <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-100">
+              <span className="block text-xs text-zinc-500 mb-1">Roof Language</span>
+              <span className="block text-sm text-zinc-900">{data.exteriorDirection.roofLanguage}</span>
+            </div>
+            <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-100">
+              <span className="block text-xs text-zinc-500 mb-1">Landscape</span>
+              <span className="block text-sm text-zinc-900">{data.exteriorDirection.landscapeNotes}</span>
+            </div>
+          </div>
+          <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+            <span className="block text-xs text-primary font-medium mb-1">AI Render Prompt (Phase 11/12)</span>
+            <span className="block text-sm text-zinc-700 italic">&quot;{data.exteriorDirection.aiRenderPrompt}&quot;</span>
+          </div>
+        </div>
+      )}
+
       {data.riskNotes.length > 0 && (
         <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-4">
           <h4 className="text-sm font-semibold text-amber-900 mb-2">Risk Notes & Warnings</h4>

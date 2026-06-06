@@ -79,6 +79,12 @@ export async function generateConceptsForProject(projectId: string) {
 
     === VERIFIED CONSTRAINTS ===
     ${constraints.map(c => `- ${c.type}: ${c.value}`).join('\n')}
+
+    === OUTPUT EXPECTATIONS ===
+    For each concept, please return:
+    - name, rationale, roomArrangement, siteResponse, complianceCheck, footprintLogic, riskNotes, scores.
+    - exteriorDirection: Describe the intended style, materials, roof, landscape, and provide a highly detailed aiRenderPrompt for an image generator (describe the building, setting, lighting, materials, and mood).
+    - layoutSchematic: Describe the footprint type (L-shape, Courtyard, Linear, Compact Block), primaryAccessSide, livingOrientation, bedroomOrientation, and privacyEdge.
   `
 
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY

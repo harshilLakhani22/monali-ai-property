@@ -1,9 +1,16 @@
 import { ConceptV1 } from '@/lib/validations/concept'
 
 export function ConceptSchematic({ data }: { data: ConceptV1 }) {
-  const footprint = data.footprintLogic?.toLowerCase() || ''
+  const footprint = data.layoutSchematic?.footprintType?.toLowerCase() || data.footprintLogic?.toLowerCase() || ''
   const isLShape = footprint.includes('l-shape')
   const isCourtyard = footprint.includes('courtyard')
+
+  const roadAccess = data.layoutSchematic?.primaryAccessSide || data.siteResponse.access || 'Unknown'
+  const roadLower = roadAccess.toLowerCase()
+  const isNorthAccess = roadLower.includes('north')
+  const isSouthAccess = roadLower.includes('south')
+  const isEastAccess = roadLower.includes('east')
+  const isWestAccess = roadLower.includes('west')
 
   return (
     <div className="relative w-full min-h-[350px] bg-zinc-50 rounded-xl border border-zinc-200 overflow-hidden font-sans flex items-center justify-center p-6 print:break-inside-avoid">
@@ -13,19 +20,41 @@ export function ConceptSchematic({ data }: { data: ConceptV1 }) {
            style={{ backgroundImage: 'radial-gradient(#52525b 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
       {/* Diagram Container */}
-      <div className="relative z-10 w-full max-w-2xl aspect-[16/9] border-2 border-dashed border-zinc-300 rounded-xl flex items-center justify-center bg-white/40 p-8 shadow-sm">
+      <div className="relative z-10 w-full max-w-2xl aspect-[16/9] border-2 border-solid border-zinc-300 rounded-xl flex items-center justify-center bg-white/40 p-8 shadow-sm">
         
         {/* Site Boundary Label */}
-        <div className="absolute top-2 left-3 text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
+        <div className={`absolute left-3 text-[10px] font-medium text-zinc-400 uppercase tracking-wider ${isNorthAccess ? 'bottom-2' : 'top-2'}`}>
           Site Boundary
         </div>
 
-        {/* Road Access Label */}
-        <div className="absolute bottom-0 inset-x-0 h-10 border-t-2 border-dashed border-zinc-300 bg-zinc-100/80 flex items-center justify-center rounded-b-xl">
-          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">
-            Road Access: {data.siteResponse.access}
-          </span>
+        {/* Buildable Envelope Context */}
+        <div className="absolute inset-6 border-2 border-dashed border-primary/20 bg-primary/5 rounded-lg pointer-events-none flex items-center justify-center">
         </div>
+        <div className={`absolute left-8 text-[10px] font-medium text-primary/40 uppercase tracking-wider ${isNorthAccess ? 'bottom-8' : 'top-8'}`}>
+          Buildable Envelope
+        </div>
+
+        {/* Dynamic Road Access Highlights */}
+        {isNorthAccess && <div className="absolute top-0 inset-x-0 h-1.5 bg-orange-500 rounded-t-lg" />}
+        {isSouthAccess && <div className="absolute bottom-0 inset-x-0 h-1.5 bg-orange-500 rounded-b-lg" />}
+        {isEastAccess && <div className="absolute top-0 bottom-0 right-0 w-1.5 bg-orange-500 rounded-r-lg" />}
+        {isWestAccess && <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-orange-500 rounded-l-lg" />}
+
+        {/* Dynamic Road Access Label */}
+        {isNorthAccess && <div className="absolute top-2 inset-x-0 text-center"><span className="text-[10px] font-bold text-orange-600 uppercase">↓ Road Access: {roadAccess}</span></div>}
+        {isSouthAccess && <div className="absolute bottom-2 inset-x-0 text-center"><span className="text-[10px] font-bold text-orange-600 uppercase">↑ Road Access: {roadAccess}</span></div>}
+        {isEastAccess && <div className="absolute top-1/2 right-2 -translate-y-1/2 translate-x-1/2 rotate-90"><span className="text-[10px] font-bold text-orange-600 uppercase">↓ Road Access: {roadAccess}</span></div>}
+        {isWestAccess && <div className="absolute top-1/2 left-2 -translate-y-1/2 -translate-x-1/2 -rotate-90"><span className="text-[10px] font-bold text-orange-600 uppercase">↓ Road Access: {roadAccess}</span></div>}
+        {!isNorthAccess && !isSouthAccess && !isEastAccess && !isWestAccess && (
+          <div className="absolute bottom-2 inset-x-0 text-center"><span className="text-[10px] font-bold text-orange-600 uppercase">Road Access: {roadAccess}</span></div>
+        )}
+
+        {/* Privacy Edge Highlight (if any) */}
+        {data.layoutSchematic?.privacyEdge && data.layoutSchematic.privacyEdge.toLowerCase() !== 'none' && (
+          <div className="absolute bottom-6 right-6 text-[9px] font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded border border-indigo-200 uppercase tracking-wider">
+            Privacy Edge: {data.layoutSchematic.privacyEdge}
+          </div>
+        )}
 
         {/* Blocks Rendering based on footprint */}
         <div className="relative w-full max-w-md h-full mb-8 flex">
