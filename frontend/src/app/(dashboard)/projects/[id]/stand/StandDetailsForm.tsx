@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { upsertStandDetails } from '@/lib/actions/stand'
+import { upsertStandDetails, suggestSiteDetails } from '@/lib/actions/stand'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -36,6 +36,48 @@ export function StandDetailsForm({ projectId, initialData }: { projectId: string
 
   const [formData, setFormData] = useState(initialState)
   const isDirty = JSON.stringify(formData) !== JSON.stringify(initialState)
+
+  type Suggestion = {
+    field: keyof typeof formData;
+    suggestedValue: string | number | null;
+    sourceType: 'Constraint' | 'Extraction';
+    snippet?: string;
+    confidence?: number;
+    status: 'pending' | 'accepted' | 'rejected';
+  }
+
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([])
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false)
+
+  const handleAutoSuggest = async () => {
+    setIsLoadingSuggestions(true)
+    const result = await suggestSiteDetails(projectId)
+    setIsLoadingSuggestions(false)
+    
+    if (result.success && result.suggestions) {
+      setSuggestions(result.suggestions.map((s: Omit<Suggestion, 'status'>) => ({ ...s, status: 'pending' as const })))
+    } else {
+      alert("Failed to auto-suggest: " + result.error)
+    }
+  }
+
+  const handleAcceptSuggestion = (index: number) => {
+    const s = suggestions[index]
+    setFormData(prev => ({ ...prev, [s.field]: s.suggestedValue }))
+    setSuggestions(prev => {
+      const next = [...prev]
+      next[index].status = 'accepted'
+      return next
+    })
+  }
+
+  const handleRejectSuggestion = (index: number) => {
+    setSuggestions(prev => {
+      const next = [...prev]
+      next[index].status = 'rejected'
+      return next
+    })
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -92,7 +134,79 @@ export function StandDetailsForm({ projectId, initialData }: { projectId: string
 
   return (
     <div className="grid gap-8 md:grid-cols-3">
-      <div className="md:col-span-2">
+      <div className="md:col-span-2 space-y-8">
+        
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold tracking-tight">Site Details</h2>
+          <Button 
+            variant="secondary" 
+            onClick={handleAutoSuggest} 
+            disabled={isLoadingSuggestions}
+            className="flex items-center gap-2"
+          >
+            {isLoadingSuggestions ? "Scanning Documents..." : "✨ Auto-Suggest from Documents"}
+          </Button>
+        </div>
+
+        {suggestions.length > 0 && (() => {
+          const suggestedFields = new Set(suggestions.map(s => s.field));
+          const expectedFields = [
+            { key: 'latitude', label: 'latitude' },
+            { key: 'longitude', label: 'longitude' },
+            { key: 'roadAccessSide', label: 'road access' },
+            { key: 'northDirection', label: 'north direction' },
+            { key: 'viewDirection', label: 'view direction' },
+            { key: 'privacyNotes', label: 'privacy notes' },
+          ];
+          const missingLabels = expectedFields.filter(f => !suggestedFields.has(f.key as keyof typeof formData)).map(f => f.label);
+
+          return (
+            <div className="p-6 bg-primary/5 rounded-2xl border border-primary/20 space-y-4">
+              <h3 className="font-semibold text-primary">Suggested Site Details</h3>
+              <p className="text-sm text-muted-foreground">
+                Only confident suggestions found in uploaded documents are shown. Missing fields should be entered manually.
+              </p>
+              
+              <div className="grid gap-3">
+                {suggestions.map((s, idx) => (
+                  <div key={idx} className={`p-4 rounded-xl border flex items-center justify-between ${s.status === 'pending' ? 'bg-white border-primary/20' : s.status === 'accepted' ? 'bg-green-50 border-green-200' : 'bg-zinc-50 border-zinc-200 opacity-50'}`}>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm">{s.field}</span>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold ${s.sourceType === 'Constraint' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}`}>
+                          {s.sourceType}
+                        </span>
+                        {s.confidence && (
+                          <span className="text-xs text-muted-foreground">
+                            {s.confidence >= 90 ? 'High conf' : s.confidence >= 70 ? 'Medium conf' : 'Low conf'}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-lg font-semibold">{s.suggestedValue}</p>
+                      {s.snippet && <p className="text-xs text-muted-foreground italic">&quot;{s.snippet}&quot;</p>}
+                    </div>
+                    
+                    {s.status === 'pending' && (
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={() => handleRejectSuggestion(idx)}>Reject</Button>
+                        <Button size="sm" onClick={() => handleAcceptSuggestion(idx)}>Accept</Button>
+                      </div>
+                    )}
+                    {s.status === 'accepted' && <span className="text-sm font-medium text-green-600">Accepted</span>}
+                    {s.status === 'rejected' && <span className="text-sm font-medium text-zinc-500">Rejected</span>}
+                  </div>
+                ))}
+              </div>
+
+              {missingLabels.length > 0 && (
+                <p className="text-xs text-muted-foreground italic mt-2">
+                  No confident document suggestion found for {missingLabels.join(', ')}.
+                </p>
+              )}
+            </div>
+          );
+        })()}
+
         <form onSubmit={handleSubmit} className="space-y-8">
           
           {/* Basic Stand Identity */}
