@@ -7,7 +7,7 @@ Monali AI is an advanced Minimum Viable Product (MVP) platform designed for auto
 2. **Site Details & Brief:** Capture precise geographical details and user functional requirements.
 3. **Concepts:** Auto-generate conceptual block layouts and massing abstractions based on strict, verified constraints.
 4. **Cost Estimation:** Auto-calculate deterministic feasibility costs based on concept area and configurable rates.
-5. **Final Report:** *(Upcoming in Phase 9)*
+5. **Final Report:** Compile extracted intelligence, concepts, and costing into a client-ready export.
 
 ## 📂 Repository Structure
 - `/frontend`: Next.js App Router SaaS application. Handles UI, routing, database state, Server Actions, and lightweight API calls. (See `frontend/README.md` for local setup).

@@ -57,8 +57,11 @@ This document tracks the high-level milestones for the Monali AI Minimum Viable 
 - Automatically handles risk multipliers for terrain slope and design complexity.
 - Validates totals against the Client's budget cap (Under/Within/Above Budget).
 
-## 🟡 Upcoming Milestones
-- **Milestone 9: Final Report Generation**
+## 🟢 Milestone 9: Final Report Generation (Completed)
+**Goal:** Compile extracted intelligence, concepts, and costing into a client-ready export.
+- Assembles Project Brief, Site Details, Verified Constraints, Concepts, and Costing.
+- Flags missing critical inputs accurately.
+- Implements print-friendly UI with print-safe block diagrams for PDF exports.
 
 ## ⚪ Later / Post-MVP
 - CAD/BIM
@@ -70,4 +73,4 @@ This document tracks the high-level milestones for the Monali AI Minimum Viable 
 ---
 
 ### Summary of Progress
-We have successfully built the complete architectural foundation for Monali AI, including the full intelligence extraction and concept generation pipelines. The Next.js + PostgreSQL SaaS shell securely handles users, routing, and database state. Heavy AI logic has been injected and successfully proven in the Data Room intelligence workflow (Phase 4), Concept Generation (Phase 7), and deterministic Cost Estimation (Phase 8). We are now moving forward to the final milestone: Final Report Generation.
+We have successfully built the complete architectural foundation for Monali AI, including the full intelligence extraction and concept generation pipelines. The Next.js + PostgreSQL SaaS shell securely handles users, routing, and database state. Heavy AI logic has been injected and successfully proven in the Data Room intelligence workflow (Phase 4), Concept Generation (Phase 7), and deterministic Cost Estimation (Phase 8). Finally, Milestone 9 (Final Report Generation) is now complete, providing a complete end-to-end MVP experience from document upload to final client-ready feasibility PDF.
