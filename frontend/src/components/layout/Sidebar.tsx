@@ -43,6 +43,19 @@ export function Sidebar() {
             Templates
             <span className="text-[9px] ml-auto bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Soon</span>
           </Link>
+
+          <div className="pt-4 pb-2">
+            <div className="h-px w-full bg-border/50 rounded-full" />
+          </div>
+
+          <a 
+            href="/sample-zoning-docs.zip" 
+            download
+            className="flex items-center gap-3 rounded-2xl px-4 py-3.5 text-[15px] font-medium transition-all duration-200 border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 hover:border-primary/30 shadow-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Sample Docs
+          </a>
         </nav>
       </div>
       <div className="p-4 pb-4 flex flex-col gap-4">
