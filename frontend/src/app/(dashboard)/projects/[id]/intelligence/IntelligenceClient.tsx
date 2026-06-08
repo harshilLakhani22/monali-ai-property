@@ -47,7 +47,7 @@ export function IntelligenceClient({
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set())
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editValues, setEditValues] = useState<{ value: string, unit: string }>({ value: '', unit: '' })
-  const [actionLoading, setActionLoading] = useState<Set<string>>(new Set())
+  const [actionLoading, setActionLoading] = useState<Record<string, string>>({})
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
   const notifiedJobsRef = useRef<Set<string>>(new Set())
 
@@ -88,16 +88,16 @@ export function IntelligenceClient({
     setLoadingIds(prev => { const n = new Set(prev); n.delete(documentId); return n })
   }
 
-  const handleVerify = async (id: string) => {
-    setActionLoading(prev => new Set(prev).add(id))
+  const handleVerify = async (id: string, actionName: string = 'verify') => {
+    setActionLoading(prev => ({ ...prev, [id]: actionName }))
     await verifyExtraction(id, projectId)
-    setActionLoading(prev => { const n = new Set(prev); n.delete(id); return n })
+    setActionLoading(prev => { const n = { ...prev }; delete n[id]; return n })
   }
 
-  const handleReject = async (id: string) => {
-    setActionLoading(prev => new Set(prev).add(id))
+  const handleReject = async (id: string, actionName: string = 'reject') => {
+    setActionLoading(prev => ({ ...prev, [id]: actionName }))
     await rejectExtraction(id, projectId, 'User rejected')
-    setActionLoading(prev => { const n = new Set(prev); n.delete(id); return n })
+    setActionLoading(prev => { const n = { ...prev }; delete n[id]; return n })
   }
 
   const startEdit = (ext: Extraction) => {
@@ -109,13 +109,13 @@ export function IntelligenceClient({
   }
 
   const saveEdit = async (id: string) => {
-    setActionLoading(prev => new Set(prev).add(id))
+    setActionLoading(prev => ({ ...prev, [id]: 'save' }))
     await updateExtraction(id, projectId, {
       value: editValues.value,
       unit: editValues.unit || undefined
     })
     setEditingId(null)
-    setActionLoading(prev => { const n = new Set(prev); n.delete(id); return n })
+    setActionLoading(prev => { const n = { ...prev }; delete n[id]; return n })
   }
 
   return (
@@ -222,7 +222,8 @@ export function IntelligenceClient({
                         return getScore(a) - getScore(b);
                       }).map(ext => {
                         const isEditing = editingId === ext.id
-                        const isLoading = actionLoading.has(ext.id)
+                        const loadingAction = actionLoading[ext.id]
+                        const isLoading = !!loadingAction
                         const finalValue = ext.editedValue ?? ext.value
                         const finalUnit = ext.editedUnit ?? ext.unit
 
@@ -260,7 +261,9 @@ export function IntelligenceClient({
                                   placeholder="unit"
                                 />
                                 <div className="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-                                  <Button size="sm" variant="default" className="rounded-full h-8" onClick={() => saveEdit(ext.id)} disabled={isLoading}>Save</Button>
+                                  <Button size="sm" variant="default" className="rounded-full h-8" onClick={() => saveEdit(ext.id)} disabled={isLoading}>
+                                    {loadingAction === 'save' ? 'Saving...' : 'Save'}
+                                  </Button>
                                   <Button size="sm" variant="ghost" className="rounded-full h-8" onClick={() => setEditingId(null)} disabled={isLoading}>Cancel</Button>
                                 </div>
                               </div>
@@ -287,13 +290,21 @@ export function IntelligenceClient({
                               
                               <div className="flex gap-2 w-full sm:w-auto">
                                 {ext.rejected ? (
-                                  <Button size="sm" variant="outline" className="h-8 rounded-full flex-1 sm:flex-none cursor-pointer" onClick={() => handleVerify(ext.id)} disabled={isLoading}>Verify Instead</Button>
+                                  <Button size="sm" variant="outline" className="h-8 rounded-full flex-1 sm:flex-none cursor-pointer" onClick={() => handleVerify(ext.id, 'verify_instead')} disabled={isLoading}>
+                                    {loadingAction === 'verify_instead' ? 'Verifying...' : 'Verify Instead'}
+                                  </Button>
                                 ) : ext.verified ? (
-                                  <Button size="sm" variant="outline" className="h-8 rounded-full flex-1 sm:flex-none cursor-pointer" onClick={() => handleReject(ext.id)} disabled={isLoading}>Revoke</Button>
+                                  <Button size="sm" variant="outline" className="h-8 rounded-full flex-1 sm:flex-none cursor-pointer" onClick={() => handleReject(ext.id, 'revoke')} disabled={isLoading}>
+                                    {loadingAction === 'revoke' ? 'Revoking...' : 'Revoke'}
+                                  </Button>
                                 ) : (
                                   <>
-                                    <Button size="sm" variant="outline" className="h-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 border-border flex-1 sm:flex-none cursor-pointer" onClick={() => handleReject(ext.id)} disabled={isLoading || isEditing}>Reject</Button>
-                                    <Button size="sm" variant="default" className="h-8 rounded-full bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none cursor-pointer" onClick={() => handleVerify(ext.id)} disabled={isLoading || isEditing}>Verify</Button>
+                                    <Button size="sm" variant="outline" className="h-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 border-border flex-1 sm:flex-none cursor-pointer" onClick={() => handleReject(ext.id, 'reject')} disabled={isLoading || isEditing}>
+                                      {loadingAction === 'reject' ? 'Rejecting...' : 'Reject'}
+                                    </Button>
+                                    <Button size="sm" variant="default" className="h-8 rounded-full bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none cursor-pointer" onClick={() => handleVerify(ext.id, 'verify')} disabled={isLoading || isEditing}>
+                                      {loadingAction === 'verify' ? 'Verifying...' : 'Verify'}
+                                    </Button>
                                   </>
                                 )}
                               </div>
