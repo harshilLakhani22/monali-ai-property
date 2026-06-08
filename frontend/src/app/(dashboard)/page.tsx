@@ -132,14 +132,22 @@ export default async function DashboardPage() {
                 <p className="mt-3 text-lg text-muted-foreground max-w-md">
                   Get started by creating a new project. Upload your zoning documents and let our AI extract the constraints immediately.
                 </p>
-                <Link href="/projects/new" className="mt-10 group relative">
-                  <Button size="lg" className="h-14 rounded-2xl pr-16 bg-background border-border text-foreground hover:bg-black/5 dark:hover:bg-white/5 font-medium border shadow-sm transition-all hover:shadow-md">
-                    Create your first project
-                  </Button>
-                  <div className="absolute right-1.5 top-1.5 w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:translate-x-1">
-                    <ArrowRight className="h-5 w-5" />
-                  </div>
-                </Link>
+                <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center">
+                  <Link href="/projects/new" className="group relative">
+                    <Button size="lg" className="h-14 rounded-2xl pr-16 bg-background border-border text-foreground hover:bg-black/5 dark:hover:bg-white/5 font-medium border shadow-sm transition-all hover:shadow-md">
+                      Create your first project
+                    </Button>
+                    <div className="absolute right-1.5 top-1.5 w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:translate-x-1">
+                      <ArrowRight className="h-5 w-5" />
+                    </div>
+                  </Link>
+                  <a href="/sample-zoning-docs.zip" download>
+                    <Button size="lg" variant="outline" className="h-14 rounded-2xl px-6 font-medium gap-2 text-muted-foreground hover:text-foreground">
+                      <FileText className="h-4 w-4" />
+                      Download Sample Docs
+                    </Button>
+                  </a>
+                </div>
               </div>
             </div>
           ) : (

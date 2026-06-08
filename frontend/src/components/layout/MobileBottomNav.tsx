@@ -11,7 +11,6 @@ export function MobileBottomNav() {
   const navItems = [
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Projects', href: '/projects', icon: FolderOpen },
-    { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
   return (

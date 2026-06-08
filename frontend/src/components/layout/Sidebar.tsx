@@ -36,11 +36,12 @@ export function Sidebar() {
             All Projects
           </Link>
           <Link 
-            href="/templates" 
-            className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-[15px] font-medium transition-all duration-200 ${pathname.startsWith('/templates') ? 'bg-card shadow-sm text-primary ring-1 ring-border/50' : 'text-muted-foreground hover:bg-black/5 hover:text-foreground dark:hover:bg-white/5'}`}
+            href="#" 
+            className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-[15px] font-medium transition-all duration-200 text-muted-foreground hover:bg-black/5 hover:text-foreground dark:hover:bg-white/5 opacity-70 cursor-not-allowed`}
           >
             <FileText className="h-5 w-5" />
             Templates
+            <span className="text-[9px] ml-auto bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Soon</span>
           </Link>
         </nav>
       </div>
@@ -49,11 +50,12 @@ export function Sidebar() {
         {/* Settings & Sign Out */}
         <div className="space-y-1">
           <Link 
-            href="/settings" 
-            className="flex items-center gap-3 rounded-2xl px-4 py-3 text-[14px] font-medium text-muted-foreground hover:bg-black/5 hover:text-foreground dark:hover:bg-white/5 transition-all duration-200"
+            href="#" 
+            className="flex items-center gap-3 rounded-2xl px-4 py-3 text-[14px] font-medium text-muted-foreground hover:bg-black/5 hover:text-foreground dark:hover:bg-white/5 transition-all duration-200 opacity-70 cursor-not-allowed"
           >
             <Settings className="h-4 w-4" />
             Settings
+            <span className="text-[9px] ml-auto bg-foreground/5 text-foreground/50 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Soon</span>
           </Link>
           <form action={signout}>
             <button 

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Building2, Trees, Building } from "lucide-react"
+import { Building2, Trees, Building, FileText } from "lucide-react"
 import { useState } from "react"
 import { createProject } from "@/lib/actions/projects"
 import { cn } from "@/lib/utils"
@@ -25,9 +25,17 @@ export default function CreateProjectPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-8 pb-10">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Create New Project</h1>
-        <p className="text-muted-foreground mt-2 text-base">Initialize a new workspace for concept generation.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Create New Project</h1>
+          <p className="text-muted-foreground mt-2 text-base">Initialize a new workspace for concept generation.</p>
+        </div>
+        <a href="/sample-zoning-docs.zip" download className="shrink-0">
+          <Button variant="outline" className="gap-2 rounded-xl">
+            <FileText className="h-4 w-4" />
+            Download Sample Docs
+          </Button>
+        </a>
       </div>
 
       <form action={handleSubmit} className="rounded-3xl border border-border bg-card shadow-sm overflow-hidden">
