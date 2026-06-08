@@ -29,7 +29,7 @@ export default async function IntelligencePage({ params }: { params: Promise<{ i
   }))
 
   const hasPendingJobs = formattedDocs.some(doc => 
-    doc.intelligenceJob?.status === 'pending' || doc.intelligenceJob?.status === 'running'
+    doc.intelligenceJob && doc.intelligenceJob.status !== 'completed' && doc.intelligenceJob.status !== 'failed'
   )
 
   return (

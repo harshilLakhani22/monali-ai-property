@@ -18,8 +18,9 @@ export async function extractIntelligence(projectId: string, documentId: string)
     })
 
     // 2. Call FastAPI backend
-    const fastApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-    const res = await fetch(`${fastApiUrl}/api/documents/extract-intelligence`, {
+    const fastApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
+    const baseUrl = fastApiUrl.endsWith('/api') ? fastApiUrl.replace(/\/api$/, '') : fastApiUrl
+    const res = await fetch(`${baseUrl}/api/documents/extract-intelligence`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

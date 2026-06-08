@@ -78,7 +78,14 @@ export function IntelligenceClient({
 
   const handleExtract = async (documentId: string) => {
     setLoadingIds(prev => new Set(prev).add(documentId))
-    await extractIntelligence(projectId, documentId)
+    const res = await extractIntelligence(projectId, documentId)
+    if (!res.success) {
+      setLoadingIds(prev => { const n = new Set(prev); n.delete(documentId); return n })
+      toast.error(res.error || "Failed to trigger extraction")
+    }
+    // If successful, the job will be in database as pending and poller/revalidatePath handles updates,
+    // but we still want to clear local loading state eventually so it relies on the server state.
+    setLoadingIds(prev => { const n = new Set(prev); n.delete(documentId); return n })
   }
 
   const handleVerify = async (id: string) => {
