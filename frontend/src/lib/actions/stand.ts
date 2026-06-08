@@ -88,8 +88,8 @@ export async function suggestSiteDetails(projectId: string) {
 
     const prompt = `You are an architectural assistant mapping raw intelligence to a Stand Details form.
     Review the following trusted CONSTRAINTS and untrusted EXTRACTIONS to suggest form fields.
-    Constraints are human-verified and MUST be prioritized. Extractions are candidate suggestions only.
-    Map only what you can find clearly. Do not guess.
+    Constraints are human-verified and MUST be prioritized.
+    You are highly encouraged to make educated inferences and reasonable guesses for fields based on context clues. Since a human architect will review and approve every suggestion on the UI, it is better to provide a plausible suggestion than to leave a field blank.
     
     Fields you can suggest:
     - erfNumber (string, e.g. "1234")
