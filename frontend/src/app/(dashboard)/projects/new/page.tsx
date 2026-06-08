@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Building2, Trees, Building, FileText } from "lucide-react"
+import { Building2, Trees, Building, FileText, Loader2 } from "lucide-react"
 import { useState } from "react"
 import { createProject } from "@/lib/actions/projects"
 import { cn } from "@/lib/utils"
@@ -38,7 +38,15 @@ export default function CreateProjectPage() {
         </a>
       </div>
 
-      <form action={handleSubmit} className="rounded-3xl border border-border bg-card shadow-sm overflow-hidden">
+      <form action={handleSubmit} className="relative rounded-3xl border border-border bg-card shadow-sm overflow-hidden">
+        {loading && (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+            <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+            <p className="text-lg font-medium text-foreground">Creating Workspace...</p>
+            <p className="text-sm text-muted-foreground mt-2">Setting up your data room and AI context</p>
+          </div>
+        )}
+
         <div className="p-8 sm:p-10 space-y-8">
           {error && (
             <div className="p-4 text-sm text-red-500 bg-red-500/10 rounded-xl border border-red-500/20">
