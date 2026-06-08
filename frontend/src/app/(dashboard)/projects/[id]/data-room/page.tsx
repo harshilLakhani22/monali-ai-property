@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { UploadZone } from "@/components/UploadZone";
 import { PendingJobPoller } from "@/components/PendingJobPoller";
 import { Button } from "@/components/ui/button";
+import { DeleteDocumentButton } from "@/components/documents/DeleteDocumentButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -91,9 +92,7 @@ export default async function DataRoomPage({ params }: { params: Promise<{ id: s
                           'use server';
                           await deleteDocument(doc.id, projectId);
                         }}>
-                          <Button variant="outline" size="sm" type="submit" className="h-8 text-xs rounded-full text-destructive hover:text-destructive border-destructive/20 hover:bg-destructive/10 cursor-pointer">
-                            Delete Document
-                          </Button>
+                          <DeleteDocumentButton />
                         </form>
                       </div>
                     </div>
