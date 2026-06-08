@@ -52,10 +52,10 @@ export async function signup(formData: FormData) {
     return { error: error.message }
   }
 
-  // Don't create DB user here — the /auth/callback route handles that
-  // after the user confirms their email.
-  // Show success message instead of redirecting to dashboard.
-  return { success: 'Check your email for a confirmation link.' }
+  // Email confirmation is disabled for MVP testing, so we are logged in instantly.
+  // The DB user will be created by the dashboard page fallback.
+  revalidatePath('/', 'layout')
+  redirect('/')
 }
 
 export async function signout() {
