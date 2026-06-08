@@ -32,7 +32,7 @@ export default async function DataRoomPage({ params }: { params: Promise<{ id: s
   // NOTE: A real retry button would call a server action that recreates the AIJob and hits FastAPI.
   // For now, we'll just show it visually if job failed.
 
-  const hasPendingJobs = aiJobs.some(job => job.status === 'pending');
+  const hasPendingJobs = aiJobs.some(job => job.status !== 'completed' && job.status !== 'failed');
 
   return (
     <div className="max-w-4xl space-y-8">
