@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { extractIntelligence, verifyExtraction, rejectExtraction, updateExtraction } from '@/app/actions/intelligence'
 import { Button } from '@/components/ui/button'
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import { toast } from 'sonner'
 
 type Extraction = {
   id: string
@@ -48,6 +49,23 @@ export function IntelligenceClient({
   const [editValues, setEditValues] = useState<{ value: string, unit: string }>({ value: '', unit: '' })
   const [actionLoading, setActionLoading] = useState<Set<string>>(new Set())
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
+  const notifiedJobsRef = useRef<Set<string>>(new Set())
+
+  useEffect(() => {
+    documents.forEach(doc => {
+      const job = doc.intelligenceJob
+      if (job?.status === 'failed' && job.errorLog && !notifiedJobsRef.current.has(job.id)) {
+        const errorMsg = job.errorLog.toLowerCase()
+        if (errorMsg.includes('quota') || errorMsg.includes('429') || errorMsg.includes('exhausted')) {
+          notifiedJobsRef.current.add(job.id)
+          toast.error("Gemini API Quota Exceeded!", {
+            description: "You have run out of your free API quota. Please wait a minute or upgrade your Gemini API key.",
+            duration: 8000
+          })
+        }
+      }
+    })
+  }, [documents])
 
   const toggleCollapse = (id: string) => {
     setCollapsedIds(prev => {

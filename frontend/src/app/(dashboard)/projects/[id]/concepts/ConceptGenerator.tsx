@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { generateConceptsForProject } from '@/lib/actions/concepts'
+import { toast } from 'sonner'
 
 export function ConceptGenerator({ projectId, hasConcepts = false }: { projectId: string, hasConcepts?: boolean }) {
   const [loading, setLoading] = useState(false)
@@ -13,10 +14,21 @@ export function ConceptGenerator({ projectId, hasConcepts = false }: { projectId
     try {
       const res = await generateConceptsForProject(projectId)
       if (!res.success) {
-        setError('Failed to generate concepts.')
+        const errorMsg = 'Failed to generate concepts.'
+        setError(errorMsg)
+        toast.error(errorMsg)
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred during generation.')
+      const errorMsg = err instanceof Error ? err.message : 'An error occurred during generation.'
+      setError(errorMsg)
+      if (errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('429') || errorMsg.toLowerCase().includes('exhausted')) {
+        toast.error("Gemini API Quota Exceeded!", {
+          description: "You have run out of your free API quota. Please wait a minute or upgrade your Gemini API key.",
+          duration: 8000
+        })
+      } else {
+        toast.error("Generation Failed", { description: errorMsg })
+      }
     } finally {
       setLoading(false)
     }
