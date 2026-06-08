@@ -19,10 +19,9 @@ export default function SignupPage() {
     if (result?.error) {
       setError(result.error)
       setLoading(false)
-    } else if (result?.success) {
-      setSuccess(result.success)
-      setLoading(false)
     }
+    // If it succeeds, the server action automatically redirects,
+    // so we don't need a success state branch.
   }
   return (
     <div className="grid lg:grid-cols-12 gap-8 items-center">
