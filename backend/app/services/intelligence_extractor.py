@@ -64,7 +64,6 @@ def extract_intelligence_task(request: ExtractionRequest):
                 SELECT id, text, "pageRef", classification 
                 FROM "DocumentChunk" 
                 WHERE "documentId" = %s 
-                AND classification NOT IN ('unknown', 'sg_diagram')
             """, (request.document_id,))
             chunks = cur.fetchall()
             
