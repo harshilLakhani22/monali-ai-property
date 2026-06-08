@@ -38,12 +38,18 @@ export async function updateSession(request: NextRequest) {
   const isCallbackRoute = request.nextUrl.pathname.startsWith('/auth/callback')
 
   // WORKAROUND: If Supabase redirects to Site URL instead of emailRedirectTo, 
-  // it might send the 'code' parameter to '/' or '/login'.
-  // We must catch 'code' and send it to '/auth/callback' so it gets exchanged!
-  if (request.nextUrl.searchParams.has('code') && !isCallbackRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/callback'
-    return NextResponse.redirect(url)
+  // it might send the 'code' parameter to the wrong domain where the PKCE cookie doesn't exist.
+  // We must catch 'code' and bounce it to the correct domain and route!
+  if (request.nextUrl.searchParams.has('code')) {
+    // If the host is not monali-ai-before-mvp, bounce them to the correct domain
+    if (request.nextUrl.host !== 'monali-ai-before-mvp.vercel.app') {
+      const targetUrl = new URL(`/auth/callback?code=${request.nextUrl.searchParams.get('code')}`, 'https://monali-ai-before-mvp.vercel.app')
+      return NextResponse.redirect(targetUrl)
+    } else if (!isCallbackRoute) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/auth/callback'
+      return NextResponse.redirect(url)
+    }
   }
 
   // No valid session → redirect to login (unless already on auth/callback page)
